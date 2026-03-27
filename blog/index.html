@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="JosieCode73 Blog — Frontend engineering, AI tooling, and web development insights." />
+  <title>Blog — JosieCode73</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c3aed'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="../index.html" class="nav-brand">
+      <span class="dot"></span>JosieCode73
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Blog</a></li>
+      <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
+      <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="container">
+
+      <section class="hero" style="padding-bottom: 48px;">
+        <div class="hero-badge">✍️ Technical Writing</div>
+        <h1>The Blog</h1>
+        <p>Frontend engineering 深度解析、AI 工具建構實錄、以及所有讓我熬夜的技術問題。</p>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- POSTS -->
+      <section class="section">
+        <div class="section-label">All Posts</div>
+        <h2 class="section-title">Articles</h2>
+
+        <div class="posts-grid">
+
+          <a id="vite-tailwind" href="#vite-tailwind" class="post-card" style="cursor:default;">
+            <span class="post-tag">Frontend</span>
+            <h3>Vite + Tailwind v4：次世代前端工具鏈設定</h3>
+            <p>從零配置到生產就緒，深入解析 Vite 5 + Tailwind CSS v4 如何重塑現代前端開發流程。Lightning CSS、原生 CSS 變數、新的 @theme 指令……全部都有。</p>
+            <div style="margin-top:8px; padding:16px; background:rgba(124,58,237,0.08); border-radius:8px; border:1px solid rgba(124,58,237,0.2); font-size:.82rem; color:var(--muted);">
+              🚧 <em>Full article coming soon — stay tuned!</em>
+            </div>
+            <div class="post-meta">2026 · 8 min read · Frontend</div>
+          </a>
+
+          <a id="rag-architecture" href="#rag-architecture" class="post-card" style="cursor:default;">
+            <span class="post-tag">AI / RAG</span>
+            <h3>自建 RAG 系統：從 Embedding 到答案生成</h3>
+            <p>深入 AI Assistant 專案的技術架構。如何用 ONNX Runtime Web 在瀏覽器跑 Transformer 模型、cosine similarity 向量搜索、以及 Context Window 管理策略。</p>
+            <div style="margin-top:8px; padding:16px; background:rgba(124,58,237,0.08); border-radius:8px; border:1px solid rgba(124,58,237,0.2); font-size:.82rem; color:var(--muted);">
+              🚧 <em>Full article coming soon — stay tuned!</em>
+            </div>
+            <div class="post-meta">2026 · 12 min read · AI</div>
+          </a>
+
+          <a id="threejs-3d" href="#threejs-3d" class="post-card" style="cursor:default;">
+            <span class="post-tag">3D / WebGL</span>
+            <h3>Three.js 產品 360° 展示：從幾何體到 PBR 材質</h3>
+            <p>ProductOrbit 專案背後的完整技術選型：OrbitControls 旋轉、PBR 材質系統、環境貼圖 (HDRI)、動態光源設置，以及針對移動設備的效能優化。</p>
+            <div style="margin-top:8px; padding:16px; background:rgba(124,58,237,0.08); border-radius:8px; border:1px solid rgba(124,58,237,0.2); font-size:.82rem; color:var(--muted);">
+              🚧 <em>Full article coming soon — stay tuned!</em>
+            </div>
+            <div class="post-meta">2026 · 10 min read · 3D</div>
+          </a>
+
+          <a id="crdt-offline" href="#crdt-offline" class="post-card" style="cursor:default;">
+            <span class="post-tag">Architecture</span>
+            <h3>CRDT + IndexedDB：打造真正離線優先的筆記應用</h3>
+            <p>NoteVault 如何在沒有後端的情況下，實現跨設備資料一致性。CRDT 算法、IndexedDB 事務管理、以及 Service Worker 離線快取策略的完整解析。</p>
+            <div style="margin-top:8px; padding:16px; background:rgba(124,58,237,0.08); border-radius:8px; border:1px solid rgba(124,58,237,0.2); font-size:.82rem; color:var(--muted);">
+              🚧 <em>Full article coming soon — stay tuned!</em>
+            </div>
+            <div class="post-meta">2026 · 9 min read · Architecture</div>
+          </a>
+
+          <a id="glass-ui" href="#glass-ui" class="post-card" style="cursor:default;">
+            <span class="post-tag">UI / UX</span>
+            <h3>Glassmorphism 2026：backdrop-filter 的正確使用方式</h3>
+            <p>跨 10 個應用實踐毛玻璃效果後學到的教訓。效能瓶頸、跨瀏覽器兼容性、何時應該用 glass 何時應該避開，以及搭配漸層背景的最佳實踐。</p>
+            <div style="margin-top:8px; padding:16px; background:rgba(124,58,237,0.08); border-radius:8px; border:1px solid rgba(124,58,237,0.2); font-size:.82rem; color:var(--muted);">
+              🚧 <em>Full article coming soon — stay tuned!</em>
+            </div>
+            <div class="post-meta">2026 · 6 min read · Design</div>
+          </a>
+
+          <a id="render-deploy" href="#render-deploy" class="post-card" style="cursor:default;">
+            <span class="post-tag">DevOps</span>
+            <h3>Render 部署 10 個 React App 的自動化工作流程</h3>
+            <p>如何管理 10 個獨立部署的前端應用？Render API、GitHub Actions 觸發器、環境變數管理，以及 pnpm monorepo 下的 CI 構建策略。</p>
+            <div style="margin-top:8px; padding:16px; background:rgba(124,58,237,0.08); border-radius:8px; border:1px solid rgba(124,58,237,0.2); font-size:.82rem; color:var(--muted);">
+              🚧 <em>Full article coming soon — stay tuned!</em>
+            </div>
+            <div class="post-meta">2026 · 7 min read · DevOps</div>
+          </a>
+
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <!-- SUBSCRIBE / CTA -->
+      <section class="section" style="text-align:center; padding-bottom: 64px;">
+        <div class="section-label" style="display:inline-block">Stay Updated</div>
+        <h2 class="section-title" style="margin-top:12px">More articles coming soon</h2>
+        <p class="section-sub" style="margin: 0 auto 32px;">Follow on GitHub to get notified when new posts drop.</p>
+        <a href="https://github.com/josiecode73" target="_blank" rel="noopener" class="btn btn-primary">
+          Follow on GitHub ↗
+        </a>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 JosieCode73 · Technical Blog ·
+      <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="../portfolio/index.html">Portfolio</a>
+    </p>
+  </footer>
+
+</body>
+</html>
