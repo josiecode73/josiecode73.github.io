@@ -446,6 +446,143 @@
       text-transform: uppercase;
       color: #334155;
     }
+
+    /* ================================================================
+       BLOG RWD — 320px → 1920px
+       ================================================================ */
+
+    /* Wide desktop: 2-col layout max-width */
+    @media (min-width: 1280px) {
+      .blog-layout { grid-template-columns: 1fr 320px; gap: 56px; }
+    }
+
+    /* Tablet landscape (1024px) */
+    @media (max-width: 1024px) {
+      .blog-layout { grid-template-columns: 1fr 260px; gap: 32px; }
+    }
+
+    /* Tablet portrait (900px) → single column */
+    @media (max-width: 900px) {
+      .blog-layout { grid-template-columns: 1fr; }
+      .blog-sidebar { display: none; }
+      .blog-hero { padding: 64px 0 36px; }
+      .featured-post-bg { padding: 36px 28px 32px; min-height: 260px; }
+      .featured-post h2 { font-size: 1.35rem; }
+    }
+
+    /* Large phone (640px) */
+    @media (max-width: 640px) {
+      .blog-hero { padding: 48px 0 24px; }
+      .blog-hero h1 { font-size: 2rem; }
+
+      .filter-bar {
+        gap: 6px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 16px;
+        margin-bottom: 28px;
+        /* subtle scrollbar */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(124,58,237,0.3) transparent;
+        -webkit-overflow-scrolling: touch;
+      }
+      .filter-bar::-webkit-scrollbar { height: 3px; }
+      .filter-bar::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.35); border-radius: 99px; }
+      .filter-btn { flex-shrink: 0; }
+
+      .featured-post-bg { padding: 28px 22px 24px; min-height: 220px; }
+      .featured-post h2 { font-size: 1.15rem; }
+      .featured-post p { font-size: 0.88rem; }
+      .featured-meta { flex-wrap: wrap; gap: 10px; }
+      .featured-cta { margin-left: 0; }
+
+      .post-list-item {
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        gap: 12px 14px;
+      }
+      .pli-meta {
+        grid-column: 2;
+        text-align: left;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .pli-min::before { content: "· "; }
+
+      .section-divider { margin: 32px 0 24px; }
+
+      .author-strip {
+        flex-direction: column;
+        text-align: center;
+        padding: 22px 18px;
+        gap: 12px;
+        margin-top: 40px;
+      }
+      .author-strip .btn-outline { margin-left: 0; }
+    }
+
+    /* Standard phone (480px) */
+    @media (max-width: 480px) {
+      .blog-hero h1 { font-size: 1.75rem; }
+      .blog-hero-desc { font-size: 0.88rem; }
+
+      .featured-post-bg {
+        padding: 22px 18px 20px;
+        min-height: 200px;
+      }
+      .featured-label { font-size: 0.65rem; margin-bottom: 14px; }
+      .featured-post h2 { font-size: 1.05rem; line-height: 1.35; }
+      .featured-post p { display: none; }
+      .featured-meta .read-time { display: none; }
+
+      .pli-title { font-size: 0.95rem; }
+      .pli-excerpt { font-size: 0.8rem; -webkit-line-clamp: 2; }
+      .coming-soon { font-size: 0.65rem; }
+
+      .post-list-item { padding: 18px 0; gap: 10px 12px; }
+      .pli-num { width: 30px; height: 30px; font-size: 0.65rem; border-radius: 8px; }
+
+      .newsletter-box { padding: 22px 18px; }
+      .newsletter-box h3 { font-size: 1rem; }
+    }
+
+    /* 360px */
+    @media (max-width: 360px) {
+      .blog-hero h1 { font-size: 1.55rem; }
+      .featured-post-bg { padding: 18px 14px 16px; }
+      .featured-post h2 { font-size: 0.95rem; }
+      .post-list-item { padding: 14px 0; }
+      .pli-body { min-width: 0; }
+      .pli-title { font-size: 0.9rem; }
+    }
+
+    /* 320px minimum */
+    @media (max-width: 320px) {
+      .blog-hero { padding: 36px 0 18px; }
+      .blog-hero h1 { font-size: 1.4rem; }
+      .blog-hero-eyebrow { margin-bottom: 14px; }
+      .blog-hero-desc { font-size: 0.82rem; }
+
+      .filter-btn { padding: 6px 12px; font-size: 0.72rem; }
+
+      .featured-post-bg { padding: 14px 12px; min-height: 160px; }
+      .featured-post h2 { font-size: 0.9rem; }
+
+      .pli-num { display: none; }
+      .post-list-item { grid-template-columns: 1fr; gap: 8px; }
+      .pli-meta { display: none; }
+      .pli-title { font-size: 0.88rem; }
+      .pli-cat { font-size: 0.62rem; }
+
+      .author-strip { padding: 14px 12px; }
+      .author-avatar-lg { width: 44px; height: 44px; font-size: 1.1rem; }
+      .author-info h4 { font-size: 0.88rem; }
+      .author-info p { font-size: 0.75rem; }
+      .author-strip .btn-outline { font-size: 0.75rem; padding: 6px 12px; }
+
+      .section-divider { margin: 20px 0 16px; }
+    }
   </style>
 </head>
 <body>
@@ -456,7 +593,7 @@
       <span class="dot"></span>JosieCode73
     </a>
     <ul class="nav-links">
-      <li><a href="../index.html">Home</a></li>
+      <li class="nav-secondary"><a href="../index.html">Home</a></li>
       <li><a href="index.html" class="active">Blog</a></li>
       <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
       <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
