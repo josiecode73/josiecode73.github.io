@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="JosieCode73 — Full-Stack Developer, building modern web apps with React, TypeScript & Node.js." />
+  <meta name="description" content="JosieCode73 — Full-Stack Developer. Frontend engineering, AI tooling, and web development." />
   <title>JosieCode73 — Developer Blog & Portfolio</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c3aed'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -26,162 +26,209 @@
     </ul>
   </nav>
 
-  <main>
-    <!-- HERO -->
-    <div class="container">
-      <section class="hero">
-        <div class="hero-badge">🚀 Available for Projects</div>
-        <h1>Building the web,<br/>one app at a time.</h1>
-        <p>Full-stack developer specializing in React, TypeScript, Node.js, and AI-integrated applications. 10 live projects, always learning.</p>
-        <div class="hero-actions">
-          <a href="portfolio/index.html" class="btn btn-primary">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-            View Portfolio
-          </a>
-          <a href="blog/index.html" class="btn btn-outline">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3 3-6 6H9v-3z"/></svg>
-            Read Blog
-          </a>
-        </div>
-      </section>
+  <!-- TOPIC TABS -->
+  <div class="topic-bar">
+    <div class="topic-bar-inner">
+      <button class="topic-tab active">All</button>
+      <button class="topic-tab">Frontend</button>
+      <button class="topic-tab">AI / RAG</button>
+      <button class="topic-tab">3D / WebGL</button>
+      <button class="topic-tab">Architecture</button>
+      <button class="topic-tab">UI / UX</button>
+      <button class="topic-tab">DevOps</button>
+    </div>
+  </div>
 
-      <!-- STATS -->
-      <div class="stats-row">
-        <div class="stat"><div class="stat-num">10</div><div class="stat-label">Live Apps</div></div>
-        <div class="stat"><div class="stat-num">5+</div><div class="stat-label">Tech Stacks</div></div>
-        <div class="stat"><div class="stat-num">100%</div><div class="stat-label">TypeScript</div></div>
-        <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Curiosity</div></div>
+  <main>
+    <div class="container">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div class="page-header-eyebrow">Developer Blog</div>
+        <h1>Building the web,<br/>one app at a time.</h1>
+        <p>Frontend engineering 深度解析、AI 工具建構實錄、10 個上線應用的幕後技術。</p>
       </div>
 
-      <hr class="divider" />
+      <!-- FEATURED POST -->
+      <a href="blog/index.html#vite-tailwind" class="featured-card">
+        <div class="featured-card-img thumb-frontend">
+          <span class="img-label">⚡</span>
+        </div>
+        <div class="featured-card-body">
+          <div>
+            <span class="featured-card-tag">★ Featured · Frontend</span>
+            <h2 class="featured-card-title" style="margin-top:12px">
+              Vite + Tailwind v4：次世代前端工具鏈的完整設定指南
+            </h2>
+          </div>
+          <p class="featured-card-excerpt">
+            從零配置到生產就緒，深入解析 Vite 5 + Tailwind CSS v4 如何重塑現代前端開發。Lightning CSS、原生 CSS 變數、全新的 @theme 指令、以及如何搭配 pnpm monorepo 使用。
+          </p>
+          <div class="featured-card-meta">
+            <div class="author-ava">J</div>
+            <span>JosieCode73</span>
+            <span>·</span>
+            <span>2026</span>
+            <span class="read-badge">8 min read</span>
+          </div>
+        </div>
+      </a>
 
-      <!-- LATEST POSTS -->
+      <!-- RECENT POSTS -->
       <section class="section">
-        <div class="section-label">Writing</div>
-        <h2 class="section-title">Latest from the blog</h2>
-        <p class="section-sub">Thoughts on frontend engineering, AI tooling, and building things that matter.</p>
+        <div class="section-head">
+          <h2 class="section-title">Recent Posts</h2>
+          <a href="blog/index.html" class="btn btn-ghost">All articles →</a>
+        </div>
 
         <div class="posts-grid">
-          <a href="blog/index.html#vite-tailwind" class="post-card">
-            <span class="post-tag">Frontend</span>
-            <h3>Vite + Tailwind v4：次世代前端工具鏈設定</h3>
-            <p>從零配置到生產就緒，深入解析最新工具鏈如何重塑現代開發流程。</p>
-            <div class="post-meta">2026 · 8 min read</div>
-          </a>
+
           <a href="blog/index.html#rag-architecture" class="post-card">
-            <span class="post-tag">AI / RAG</span>
-            <h3>自建 RAG 系統：從 Embedding 到答案生成的全流程</h3>
-            <p>深入 AI Assistant 專案，解析如何用 ONNX + IndexedDB 在瀏覽器端跑 RAG。</p>
-            <div class="post-meta">2026 · 12 min read</div>
+            <div class="card-thumb thumb-ai">🤖</div>
+            <div class="card-body">
+              <span class="post-tag tag-ai">AI / RAG</span>
+              <h3>自建 RAG 系統：從 Embedding 到答案生成的全流程</h3>
+              <p>如何用 ONNX Runtime Web 在瀏覽器跑 Transformer 模型、cosine similarity 向量搜索。</p>
+              <div class="card-meta">
+                <div class="author-ava" style="width:20px;height:20px;font-size:0.6rem">J</div>
+                <span>JosieCode73</span>
+                <span class="read-min">12 min</span>
+              </div>
+            </div>
           </a>
+
           <a href="blog/index.html#threejs-3d" class="post-card">
-            <span class="post-tag">3D / WebGL</span>
-            <h3>Three.js 產品 360° 展示：從幾何體到材質燈光的完整實作</h3>
-            <p>ProductOrbit 專案背後的技術選型：OrbitControls、PBR 材質、環境貼圖。</p>
-            <div class="post-meta">2026 · 10 min read</div>
+            <div class="card-thumb thumb-3d">🌐</div>
+            <div class="card-body">
+              <span class="post-tag tag-3d">3D / WebGL</span>
+              <h3>Three.js 產品 360° 展示：從幾何體到 PBR 材質燈光</h3>
+              <p>OrbitControls、PBR 材質系統、HDRI 環境貼圖與移動設備效能優化。</p>
+              <div class="card-meta">
+                <div class="author-ava" style="width:20px;height:20px;font-size:0.6rem">J</div>
+                <span>JosieCode73</span>
+                <span class="read-min">10 min</span>
+              </div>
+            </div>
           </a>
+
           <a href="blog/index.html#crdt-offline" class="post-card">
-            <span class="post-tag">Architecture</span>
-            <h3>CRDT + IndexedDB：打造真正離線優先的筆記應用</h3>
-            <p>NoteVault 如何在沒有後端的情況下，實現多設備同步與衝突解決。</p>
-            <div class="post-meta">2026 · 9 min read</div>
+            <div class="card-thumb thumb-arch">📦</div>
+            <div class="card-body">
+              <span class="post-tag tag-arch">Architecture</span>
+              <h3>CRDT + IndexedDB：打造真正離線優先的筆記應用</h3>
+              <p>沒有後端的多設備資料一致性：CRDT 算法與 Service Worker 離線快取。</p>
+              <div class="card-meta">
+                <div class="author-ava" style="width:20px;height:20px;font-size:0.6rem">J</div>
+                <span>JosieCode73</span>
+                <span class="read-min">9 min</span>
+              </div>
+            </div>
           </a>
+
           <a href="blog/index.html#glass-ui" class="post-card">
-            <span class="post-tag">UI / UX</span>
-            <h3>Glassmorphism 2026：backdrop-filter 的正確使用方式</h3>
-            <p>跨 10 個應用實踐毛玻璃效果，學到的教訓與最佳實踐。</p>
-            <div class="post-meta">2026 · 6 min read</div>
+            <div class="card-thumb thumb-design">✨</div>
+            <div class="card-body">
+              <span class="post-tag tag-design">UI / UX</span>
+              <h3>Glassmorphism 2026：backdrop-filter 的正確使用方式</h3>
+              <p>跨 10 個應用實踐毛玻璃效果後學到的效能瓶頸與最佳實踐。</p>
+              <div class="card-meta">
+                <div class="author-ava" style="width:20px;height:20px;font-size:0.6rem">J</div>
+                <span>JosieCode73</span>
+                <span class="read-min">6 min</span>
+              </div>
+            </div>
           </a>
+
           <a href="blog/index.html#render-deploy" class="post-card">
-            <span class="post-tag">DevOps</span>
-            <h3>Render 部署 10 個 React App 的自動化工作流程</h3>
-            <p>用 GitHub Actions + Render API 建立一鍵部署管道，從 push 到上線只需 3 分鐘。</p>
-            <div class="post-meta">2026 · 7 min read</div>
+            <div class="card-thumb thumb-devops">🚀</div>
+            <div class="card-body">
+              <span class="post-tag tag-devops">DevOps</span>
+              <h3>Render 部署 10 個 React App 的自動化工作流程</h3>
+              <p>Render API + GitHub Actions 觸發器、環境變數管理、pnpm monorepo CI。</p>
+              <div class="card-meta">
+                <div class="author-ava" style="width:20px;height:20px;font-size:0.6rem">J</div>
+                <span>JosieCode73</span>
+                <span class="read-min">7 min</span>
+              </div>
+            </div>
           </a>
-        </div>
 
-        <div style="text-align:center; margin-top: 36px;">
-          <a href="blog/index.html" class="btn btn-outline">View all posts →</a>
+          <a href="portfolio/index.html" class="post-card" style="background:linear-gradient(135deg, #f8f8ff 0%, #f0f4ff 100%); border-color:#c7d7f9;">
+            <div class="card-thumb" style="background:linear-gradient(135deg,#3d63dd,#6366f1); height:clamp(110px,18vw,160px);">🛠</div>
+            <div class="card-body">
+              <span class="post-tag" style="background:#dbeafe;color:#1d4ed8">Portfolio</span>
+              <h3>10 個上線應用 — 完整 Portfolio</h3>
+              <p>SaaSControl、AI Assistant、SwiftCart、CryptoLens … 全部部署於 Render。</p>
+              <div class="card-meta">
+                <span style="color:#3d63dd;font-weight:600">View all 10 apps →</span>
+              </div>
+            </div>
+          </a>
+
         </div>
       </section>
 
-      <hr class="divider" />
+      <div class="divider"></div>
 
-      <!-- FEATURED PROJECTS -->
+      <!-- STATS -->
       <section class="section">
-        <div class="section-label">Work</div>
-        <h2 class="section-title">Featured Projects</h2>
-        <p class="section-sub">A selection of live apps built with modern tech stacks.</p>
-
-        <div class="apps-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
-          <a href="https://saascontrol.onrender.com" target="_blank" rel="noopener" class="app-card">
-            <div class="app-card-header">
-              <div class="app-icon" style="background:linear-gradient(135deg,#3b82f6,#1e40af)">📊</div>
-              <div><h3>SaaSControl</h3><p style="color:var(--muted);font-size:.82rem">Subscription Dashboard</p></div>
-            </div>
-            <div class="app-card-body">
-              <p>SaaS 管理儀表板，具備角色權限系統、MRR 分析與多語言支援。</p>
-              <div class="app-tags"><span class="app-tag">React</span><span class="app-tag">TypeScript</span><span class="app-tag">Tailwind</span></div>
-            </div>
-            <div class="app-link-row">Live on Render <span>View App ↗</span></div>
-          </a>
-          <a href="https://aiassistant-m1qo.onrender.com" target="_blank" rel="noopener" class="app-card">
-            <div class="app-card-header">
-              <div class="app-icon" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">🤖</div>
-              <div><h3>AI Assistant</h3><p style="color:var(--muted);font-size:.82rem">RAG Chat Platform</p></div>
-            </div>
-            <div class="app-card-body">
-              <p>基於 RAG 的 AI 知識問答平台，支援文件上傳、向量搜索與多輪對話。</p>
-              <div class="app-tags"><span class="app-tag">ONNX</span><span class="app-tag">WebAssembly</span><span class="app-tag">React</span></div>
-            </div>
-            <div class="app-link-row">Live on Render <span>View App ↗</span></div>
-          </a>
-          <a href="https://swiftcart-zyoe.onrender.com" target="_blank" rel="noopener" class="app-card">
-            <div class="app-card-header">
-              <div class="app-icon" style="background:linear-gradient(135deg,#d97706,#92400e)">🛒</div>
-              <div><h3>SwiftCart</h3><p style="color:var(--muted);font-size:.82rem">E-Commerce Frontend</p></div>
-            </div>
-            <div class="app-card-body">
-              <p>精緻電商前台，暖調設計系統、商品卡片動畫與購物車互動。</p>
-              <div class="app-tags"><span class="app-tag">React</span><span class="app-tag">Zustand</span><span class="app-tag">TypeScript</span></div>
-            </div>
-            <div class="app-link-row">Live on Render <span>View App ↗</span></div>
-          </a>
-        </div>
-
-        <div style="text-align:center; margin-top: 32px;">
-          <a href="portfolio/index.html" class="btn btn-primary">See all 10 apps →</a>
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-num">10</div>
+            <div class="stat-label">Live Apps</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">5+</div>
+            <div class="stat-label">Tech Stacks</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">100%</div>
+            <div class="stat-label">TypeScript</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">Curiosity</div>
+          </div>
         </div>
       </section>
 
-      <hr class="divider" />
+      <div class="divider"></div>
 
       <!-- ABOUT -->
       <section class="section">
         <div class="about-strip">
           <div class="about-avatar">👩‍💻</div>
           <div class="about-text">
-            <h2>Hi, I'm JosieCode73</h2>
+            <h2>JosieCode73</h2>
             <p>Full-stack developer passionate about building beautiful, fast, and accessible web experiences. From 3D product showcases to AI-powered tools — I ship things that work.</p>
             <div class="about-links">
-              <a href="https://github.com/josiecode73" target="_blank" rel="noopener" class="btn btn-outline" style="font-size:.82rem; padding: 7px 16px;">
-                GitHub ↗
-              </a>
-              <a href="portfolio/index.html" class="btn btn-outline" style="font-size:.82rem; padding: 7px 16px;">
-                Portfolio ↗
-              </a>
+              <a href="https://github.com/josiecode73" target="_blank" rel="noopener" class="btn btn-outline">GitHub ↗</a>
+              <a href="portfolio/index.html" class="btn btn-outline">Portfolio ↗</a>
+              <a href="blog/index.html" class="btn btn-primary">Read Blog →</a>
             </div>
           </div>
         </div>
       </section>
+
     </div>
   </main>
 
   <footer>
-    <p>© 2026 JosieCode73 · Built with HTML, CSS & passion ·
-      <a href="https://github.com/josiecode73/josiecode73.github.io" target="_blank" rel="noopener">View Source</a>
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp;
+      <a href="https://github.com/josiecode73/josiecode73.github.io" target="_blank" rel="noopener">View Source</a> &nbsp;·&nbsp;
+      <a href="portfolio/index.html">Portfolio</a> &nbsp;·&nbsp;
+      <a href="blog/index.html">Blog</a>
     </p>
   </footer>
+
+  <script>
+    document.querySelectorAll('.topic-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.topic-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
 
 </body>
 </html>

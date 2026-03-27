@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="JosieCode73 Portfolio — 10 live React + TypeScript applications." />
   <title>Portfolio — JosieCode73</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c3aed'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
@@ -26,256 +26,228 @@
     </ul>
   </nav>
 
+  <!-- TOPIC TABS -->
+  <div class="topic-bar">
+    <div class="topic-bar-inner">
+      <button class="topic-tab active">All (10)</button>
+      <button class="topic-tab">Dashboard</button>
+      <button class="topic-tab">AI / ML</button>
+      <button class="topic-tab">E-Commerce</button>
+      <button class="topic-tab">Productivity</button>
+      <button class="topic-tab">3D / WebGL</button>
+      <button class="topic-tab">Blog / CMS</button>
+    </div>
+  </div>
+
   <main>
     <div class="container">
 
-      <!-- HEADER -->
-      <section class="hero" style="padding-bottom: 48px;">
-        <div class="hero-badge">🛠 10 Live Applications</div>
-        <h1>Portfolio Preview</h1>
-        <p>每個應用都使用 React + TypeScript + Vite 構建，部署於 Render，設計風格各異，功能完整。</p>
-      </section>
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div class="page-header-eyebrow">Live Applications</div>
+        <h1>Portfolio</h1>
+        <p>10 個應用，全部使用 React + TypeScript + Vite 構建，部署於 Render，功能完整上線。</p>
+      </div>
 
       <!-- STATS -->
       <div class="stats-row">
-        <div class="stat"><div class="stat-num">10</div><div class="stat-label">Apps</div></div>
+        <div class="stat"><div class="stat-num">10</div><div class="stat-label">Live Apps</div></div>
         <div class="stat"><div class="stat-num">React</div><div class="stat-label">+ TypeScript</div></div>
         <div class="stat"><div class="stat-num">Render</div><div class="stat-label">Deployed</div></div>
         <div class="stat"><div class="stat-num">Vite</div><div class="stat-label">Build Tool</div></div>
       </div>
 
-      <hr class="divider" />
+      <div class="divider"></div>
 
       <!-- ALL 10 APPS -->
       <section class="section">
-        <div class="section-label">Projects</div>
-        <h2 class="section-title">All 10 Applications</h2>
-        <p class="section-sub">點擊任一卡片即可前往正式上線的應用程式。</p>
+        <div class="section-head">
+          <div>
+            <div class="section-label">Projects</div>
+            <h2 class="section-title">All 10 Applications</h2>
+          </div>
+          <a href="https://github.com/josiecode73/PortfolioMonorepo" target="_blank" rel="noopener" class="btn btn-outline">View Source ↗</a>
+        </div>
 
         <div class="apps-grid">
 
           <!-- 1. SaaSControl -->
           <a href="https://saascontrol.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-saas" style="height:120px;font-size:2.2rem">📊</div>
             <div class="app-card-header">
               <div class="app-icon" style="background:linear-gradient(135deg,#3b82f6,#1e40af)">📊</div>
-              <div>
-                <h3>SaaSControl</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">Subscription Management Dashboard</p>
-              </div>
+              <div><h3>SaaSControl</h3><div class="app-card-sub">Subscription Management Dashboard</div></div>
             </div>
             <div class="app-card-body">
-              <p>具備角色權限（Admin / Manager / Viewer）、MRR 分析圖表、訂閱管理與多語言切換的 SaaS 管理後台。</p>
+              <p>角色權限（Admin / Manager / Viewer）、MRR 分析圖表、訂閱管理與多語言切換的 SaaS 管理後台。</p>
               <div class="app-tags">
-                <span class="app-tag">React</span>
-                <span class="app-tag">TypeScript</span>
-                <span class="app-tag">Recharts</span>
-                <span class="app-tag">i18n</span>
+                <span class="app-tag">React</span><span class="app-tag">TypeScript</span><span class="app-tag">Recharts</span><span class="app-tag">i18n</span>
               </div>
             </div>
-            <div class="app-link-row">saascontrol.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">saascontrol.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 2. AI Assistant -->
           <a href="https://aiassistant-m1qo.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-ai" style="height:120px;font-size:2.2rem">🤖</div>
             <div class="app-card-header">
-              <div class="app-icon" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">🤖</div>
-              <div>
-                <h3>AI Assistant</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">RAG Knowledge Q&amp;A Platform</p>
-              </div>
+              <div class="app-icon" style="background:linear-gradient(135deg,#8b5cf6,#5b21b6)">🤖</div>
+              <div><h3>AI Assistant</h3><div class="app-card-sub">RAG Knowledge Q&amp;A Platform</div></div>
             </div>
             <div class="app-card-body">
-              <p>基於 RAG 架構的 AI 知識問答平台，使用 ONNX Runtime Web 在瀏覽器端執行推理，無需雲端 API 費用。</p>
+              <p>RAG 架構的 AI 知識問答平台，ONNX Runtime Web 在瀏覽器端執行推理，無需雲端 API 費用。</p>
               <div class="app-tags">
-                <span class="app-tag">ONNX</span>
-                <span class="app-tag">WebAssembly</span>
-                <span class="app-tag">RAG</span>
-                <span class="app-tag">React</span>
+                <span class="app-tag">ONNX</span><span class="app-tag">WebAssembly</span><span class="app-tag">RAG</span><span class="app-tag">React</span>
               </div>
             </div>
-            <div class="app-link-row">aiassistant.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">aiassistant.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 3. SwiftCart -->
           <a href="https://swiftcart-zyoe.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-cart" style="height:120px;font-size:2.2rem">🛒</div>
             <div class="app-card-header">
-              <div class="app-icon" style="background:linear-gradient(135deg,#d97706,#92400e)">🛒</div>
-              <div>
-                <h3>SwiftCart</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">E-Commerce Frontend</p>
-              </div>
+              <div class="app-icon" style="background:linear-gradient(135deg,#f97316,#92400e)">🛒</div>
+              <div><h3>SwiftCart</h3><div class="app-card-sub">E-Commerce Frontend</div></div>
             </div>
             <div class="app-card-body">
               <p>精緻電商前台，暖調品牌設計系統、多圖輪播、產品卡片懸停動畫與完整購物車流程。</p>
               <div class="app-tags">
-                <span class="app-tag">React</span>
-                <span class="app-tag">Zustand</span>
-                <span class="app-tag">TypeScript</span>
+                <span class="app-tag">React</span><span class="app-tag">Zustand</span><span class="app-tag">TypeScript</span>
               </div>
             </div>
-            <div class="app-link-row">swiftcart.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">swiftcart.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 4. CryptoLens -->
           <a href="https://cryptolens-9wms.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-crypto" style="height:120px;font-size:2.2rem">📈</div>
             <div class="app-card-header">
               <div class="app-icon" style="background:linear-gradient(135deg,#6d28d9,#2e1065)">📈</div>
-              <div>
-                <h3>CryptoLens</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">Crypto Dashboard</p>
-              </div>
+              <div><h3>CryptoLens</h3><div class="app-card-sub">Crypto Dashboard</div></div>
             </div>
             <div class="app-card-body">
-              <p>即時加密貨幣儀表板，Neon Glow 視覺風格、BTC/ETH 歷史價格折線圖、資產分配圓餅圖與印刷友好模式。</p>
+              <p>即時加密貨幣儀表板，Neon Glow 視覺風格、BTC/ETH 歷史折線圖、資產分配圓餅圖。</p>
               <div class="app-tags">
-                <span class="app-tag">Recharts</span>
-                <span class="app-tag">Neon UI</span>
-                <span class="app-tag">Print</span>
+                <span class="app-tag">Recharts</span><span class="app-tag">Neon UI</span><span class="app-tag">Print Mode</span>
               </div>
             </div>
-            <div class="app-link-row">cryptolens.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">cryptolens.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 5. FlowBoard -->
           <a href="https://flowboard-ovpt.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-kanban" style="height:120px;font-size:2.2rem">📋</div>
             <div class="app-card-header">
               <div class="app-icon" style="background:linear-gradient(135deg,#059669,#064e3b)">📋</div>
-              <div>
-                <h3>FlowBoard</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">Kanban Task Manager</p>
-              </div>
+              <div><h3>FlowBoard</h3><div class="app-card-sub">Kanban Task Manager</div></div>
             </div>
             <div class="app-card-body">
-              <p>看板式任務管理工具，支援拖曳排序、玻璃效果 UI、優先標籤與多語言，資料持久化至 LocalStorage。</p>
+              <p>看板式任務管理工具，拖曳排序、玻璃效果 UI、優先標籤與多語言，資料持久化至 LocalStorage。</p>
               <div class="app-tags">
-                <span class="app-tag">DnD</span>
-                <span class="app-tag">Glass UI</span>
-                <span class="app-tag">LocalStorage</span>
+                <span class="app-tag">DnD</span><span class="app-tag">Glass UI</span><span class="app-tag">LocalStorage</span>
               </div>
             </div>
-            <div class="app-link-row">flowboard.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">flowboard.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 6. NoteVault -->
           <a href="https://notevault-2nlu.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-note" style="height:120px;font-size:2.2rem">📝</div>
             <div class="app-card-header">
               <div class="app-icon" style="background:linear-gradient(135deg,#ea580c,#7c2d12)">📝</div>
-              <div>
-                <h3>NoteVault</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">Offline-First Notes</p>
-              </div>
+              <div><h3>NoteVault</h3><div class="app-card-sub">Offline-First Notes</div></div>
             </div>
             <div class="app-card-body">
-              <p>離線優先筆記應用，以 IndexedDB + CRDT 實現衝突解決，支援資料夾分類、全文搜索與 Markdown 編輯。</p>
+              <p>離線優先筆記應用，IndexedDB + CRDT 衝突解決，資料夾分類、全文搜索與 Markdown 編輯。</p>
               <div class="app-tags">
-                <span class="app-tag">IndexedDB</span>
-                <span class="app-tag">CRDT</span>
-                <span class="app-tag">Markdown</span>
+                <span class="app-tag">IndexedDB</span><span class="app-tag">CRDT</span><span class="app-tag">Markdown</span>
               </div>
             </div>
-            <div class="app-link-row">notevault.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">notevault.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 7. PageForge -->
           <a href="https://pageforge-jiz8.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-page" style="height:120px;font-size:2.2rem">🔧</div>
             <div class="app-card-header">
               <div class="app-icon" style="background:linear-gradient(135deg,#dc2626,#7f1d1d)">🔧</div>
-              <div>
-                <h3>PageForge</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">Low-Code Page Editor</p>
-              </div>
+              <div><h3>PageForge</h3><div class="app-card-sub">Low-Code Page Editor</div></div>
             </div>
             <div class="app-card-body">
-              <p>低程式碼頁面編輯器，支援拖曳元件、屬性面板、JSON 匯出/匯入與即時預覽，Brutalist 設計風格。</p>
+              <p>低程式碼頁面編輯器，拖曳元件、屬性面板、JSON 匯出/匯入與即時預覽，Brutalist 設計風格。</p>
               <div class="app-tags">
-                <span class="app-tag">Low-Code</span>
-                <span class="app-tag">DnD</span>
-                <span class="app-tag">JSON</span>
+                <span class="app-tag">Low-Code</span><span class="app-tag">DnD</span><span class="app-tag">JSON</span>
               </div>
             </div>
-            <div class="app-link-row">pageforge.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">pageforge.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 8. PixelCraft AI -->
           <a href="https://pixelcraft-hp9e.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-pixel" style="height:120px;font-size:2.2rem">🎨</div>
             <div class="app-card-header">
               <div class="app-icon" style="background:linear-gradient(135deg,#0891b2,#164e63)">🎨</div>
-              <div>
-                <h3>PixelCraft AI</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">AI Image Processing Lab</p>
-              </div>
+              <div><h3>PixelCraft AI</h3><div class="app-card-sub">AI Image Processing Lab</div></div>
             </div>
             <div class="app-card-body">
-              <p>AI 圖像處理實驗室，使用 ONNX Runtime + WebAssembly 在瀏覽器端執行 AI 濾鏡、背景去除與風格遷移。</p>
+              <p>AI 圖像處理實驗室，ONNX Runtime + WebAssembly 在瀏覽器端執行 AI 濾鏡、背景去除與風格遷移。</p>
               <div class="app-tags">
-                <span class="app-tag">ONNX</span>
-                <span class="app-tag">WebAssembly</span>
-                <span class="app-tag">Canvas API</span>
+                <span class="app-tag">ONNX</span><span class="app-tag">WebAssembly</span><span class="app-tag">Canvas API</span>
               </div>
             </div>
-            <div class="app-link-row">pixelcraft.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">pixelcraft.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 9. ProductOrbit -->
           <a href="https://productorbit.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-orbit" style="height:120px;font-size:2.2rem">🌐</div>
             <div class="app-card-header">
-              <div class="app-icon" style="background:linear-gradient(135deg,#475569,#0f172a)">🌐</div>
-              <div>
-                <h3>ProductOrbit</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">3D Product Showcase</p>
-              </div>
+              <div class="app-icon" style="background:linear-gradient(135deg,#64748b,#1e293b)">🌐</div>
+              <div><h3>ProductOrbit</h3><div class="app-card-sub">3D Product Showcase</div></div>
             </div>
             <div class="app-card-body">
-              <p>Three.js 360° 互動式 3D 產品展示，支援材質切換、環境光貼圖、OrbitControls 旋轉與精緻色彩選擇器。</p>
+              <p>Three.js 360° 互動式 3D 產品展示，材質切換、環境光貼圖、OrbitControls 旋轉與色彩選擇器。</p>
               <div class="app-tags">
-                <span class="app-tag">Three.js</span>
-                <span class="app-tag">WebGL</span>
-                <span class="app-tag">PBR</span>
+                <span class="app-tag">Three.js</span><span class="app-tag">WebGL</span><span class="app-tag">PBR</span>
               </div>
             </div>
-            <div class="app-link-row">productorbit.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">productorbit.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
           <!-- 10. InkPress -->
           <a href="https://inkpress-n8yf.onrender.com" target="_blank" rel="noopener" class="app-card">
+            <div class="card-thumb thumb-ink" style="height:120px;font-size:2.2rem">✍️</div>
             <div class="app-card-header">
-              <div class="app-icon" style="background:linear-gradient(135deg,#292524,#1c1917)">✍️</div>
-              <div>
-                <h3>InkPress</h3>
-                <p style="color:var(--muted);font-size:.8rem;margin-top:2px">Markdown Blog Platform</p>
-              </div>
+              <div class="app-icon" style="background:linear-gradient(135deg,#44403c,#1c1917)">✍️</div>
+              <div><h3>InkPress</h3><div class="app-card-sub">Markdown Blog Platform</div></div>
             </div>
             <div class="app-card-body">
-              <p>AI 輔助 Markdown 部落格平台，奶油色極簡編輯設計、AI 自動摘要標籤、文章列表左邊框 accent hover。</p>
+              <p>AI 輔助 Markdown 部落格平台，奶油色極簡編輯設計、AI 自動摘要標籤、文章列表 accent hover。</p>
               <div class="app-tags">
-                <span class="app-tag">Markdown</span>
-                <span class="app-tag">AI Tags</span>
-                <span class="app-tag">Editorial UI</span>
+                <span class="app-tag">Markdown</span><span class="app-tag">AI Tags</span><span class="app-tag">Editorial UI</span>
               </div>
             </div>
-            <div class="app-link-row">inkpress.onrender.com <span>Open ↗</span></div>
+            <div class="app-link-row"><span style="color:var(--muted-lt)">inkpress.onrender.com</span><span class="open-link">Open ↗</span></div>
           </a>
 
         </div>
       </section>
 
-      <hr class="divider" />
+      <div class="divider"></div>
 
       <!-- TECH STACK -->
-      <section class="section" style="padding-top:48px; padding-bottom: 64px;">
+      <section class="section">
         <div class="section-label">Tech Stack</div>
         <h2 class="section-title">共同使用的技術</h2>
         <div class="stats-row">
-          <div class="stat"><div class="stat-num" style="font-size:1.4rem">React</div><div class="stat-label">+ Hooks</div></div>
-          <div class="stat"><div class="stat-num" style="font-size:1.4rem">TypeScript</div><div class="stat-label">Strict Mode</div></div>
-          <div class="stat"><div class="stat-num" style="font-size:1.4rem">Vite</div><div class="stat-label">Build Tool</div></div>
-          <div class="stat"><div class="stat-num" style="font-size:1.4rem">Tailwind</div><div class="stat-label">CSS</div></div>
-          <div class="stat"><div class="stat-num" style="font-size:1.4rem">Render</div><div class="stat-label">Hosting</div></div>
+          <div class="stat"><div class="stat-num" style="font-size:1.2rem">React</div><div class="stat-label">+ Hooks</div></div>
+          <div class="stat"><div class="stat-num" style="font-size:1.2rem">TS</div><div class="stat-label">TypeScript</div></div>
+          <div class="stat"><div class="stat-num" style="font-size:1.2rem">Vite</div><div class="stat-label">Build Tool</div></div>
+          <div class="stat"><div class="stat-num" style="font-size:1.2rem">Render</div><div class="stat-label">Hosting</div></div>
         </div>
-        <div style="text-align:center; margin-top: 36px;">
-          <a href="https://github.com/josiecode73/PortfolioMonorepo" target="_blank" rel="noopener" class="btn btn-primary">
-            View Source on GitHub ↗
-          </a>
+        <div style="text-align:center; margin-top: 28px;">
+          <a href="https://github.com/josiecode73/PortfolioMonorepo" target="_blank" rel="noopener" class="btn btn-primary">View Source on GitHub ↗</a>
         </div>
       </section>
 
@@ -283,10 +255,19 @@
   </main>
 
   <footer>
-    <p>© 2026 JosieCode73 · 10 Apps · All deployed on Render ·
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp; 10 Apps · All deployed on Render &nbsp;·&nbsp;
       <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a>
     </p>
   </footer>
+
+  <script>
+    document.querySelectorAll('.topic-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.topic-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
 
 </body>
 </html>
