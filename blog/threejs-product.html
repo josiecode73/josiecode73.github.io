@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Three.js 產品 360° 展示：從「看起來不錯」到「在 iPhone 跑得動」 — JosieCode73</title>
+  <meta name="description" content="Three.js 3D 產品展示的完整踩坑紀錄：PBR 材質設定、HDRI 環境貼圖、OrbitControls 限制、以及讓你的 WebGL 在低端手機不掉幀的效能優化策略。" />
+  <link rel="canonical" href="https://josiecode73.github.io/blog/threejs-product.html" />
+  <meta property="og:title" content="Three.js 產品 360° 展示：從幾何體到 PBR 材質燈光" />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .article-banner { height: 6px; background: linear-gradient(90deg, #10b981, #065f46); }
+    .article-wrap { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,24px); }
+    .article-breadcrumb { font-size: 0.8rem; color: var(--muted-lt); padding: 20px 0 0; display: flex; align-items: center; gap: 6px; }
+    .article-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .article-header { padding: 32px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .article-cat { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #065f46; background: #d1fae5; padding: 3px 9px; border-radius: 4px; margin-bottom: 14px; }
+    .article-header h1 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; line-height: 1.3; color: var(--text-head); letter-spacing: -0.02em; margin-bottom: 14px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted-lt); flex-wrap: wrap; }
+    .article-meta .author-ava { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #065f46); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .article-body { font-size: clamp(0.95rem, 2.2vw, 1.05rem); line-height: 1.85; color: #2d2d2d; padding-bottom: 60px; }
+    .article-body h2 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; color: var(--text-head); margin: 48px 0 16px; letter-spacing: -0.02em; }
+    .article-body h3 { font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; color: var(--text-head); margin: 32px 0 12px; }
+    .article-body p { margin-bottom: 22px; }
+    .article-body a { color: var(--accent); text-decoration: underline; text-decoration-color: #c7d7f9; text-underline-offset: 3px; }
+    .article-body ul, .article-body ol { margin: 0 0 22px 0; padding-left: 24px; }
+    .article-body li { margin-bottom: 8px; }
+    .article-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: #ecfdf5; color: #065f46; padding: 2px 6px; border-radius: 4px; }
+    .article-body pre { background: #0f172a; color: #e2e8f0; padding: 20px 24px; border-radius: 10px; overflow-x: auto; margin: 24px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.875em; line-height: 1.7; }
+    .article-body pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .article-body blockquote { border-left: 3px solid #10b981; margin: 28px 0; padding: 4px 0 4px 20px; color: var(--muted); font-style: italic; }
+    .article-body .note { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body .warn { background: #fff8f0; border: 1px solid #ffd7aa; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+    .related-posts { background: var(--bg-sub); border-radius: 12px; padding: 28px; margin-top: 48px; }
+    .related-posts h3 { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 16px; }
+    .related-link { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; color: inherit; padding: 10px 0; border-bottom: 1px solid var(--border); transition: all 0.12s; }
+    .related-link:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-link:hover span { color: var(--accent); }
+    .related-link .rcat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--muted-lt); letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; min-width: 70px; }
+    .related-link span { font-size: 0.92rem; font-weight: 600; color: var(--text-head); line-height: 1.4; transition: color 0.12s; }
+    @media (max-width: 640px) { .article-body pre { padding: 14px 16px; font-size: 0.8em; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="nav-brand"><span class="dot"></span>JosieCode73</a>
+    <ul class="nav-links">
+      <li class="nav-secondary"><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Blog</a></li>
+      <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
+      <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
+    </ul>
+  </nav>
+  <div class="article-banner"></div>
+
+  <main style="padding-top:calc(var(--nav-h) + 6px);">
+    <div class="article-wrap">
+      <div class="article-breadcrumb">
+        <a href="index.html">Blog</a> <span>›</span> <span>3D / WebGL</span>
+      </div>
+      <header class="article-header">
+        <span class="article-cat">3D / WebGL</span>
+        <h1>Three.js 產品 360° 展示：從「看起來不錯」到「在 iPhone 跑得動」</h1>
+        <div class="article-meta">
+          <div class="author-ava">J</div>
+          <span><strong>JosieCode73</strong></span>
+          <span>·</span>
+          <span>2026 年 1 月</span>
+          <span>·</span>
+          <span>10 min read</span>
+        </div>
+      </header>
+      <article class="article-body">
+
+        <p>ProductOrbit 這個專案一開始讓我很興奮，因為它的功能需求很明確：讓用戶能 360° 旋轉查看 3D 產品，並即時切換顏色和材質。<strong>在桌面版做到這個很容易。讓它在 iPhone 12 上也跑得順才是真正的挑戰。</strong></p>
+
+        <h2>從幾何體開始，不是從 GLTF 開始</h2>
+
+        <p>做 3D 產品展示，第一個決定是模型的來源：用 Three.js 內建幾何體（BoxGeometry、SphereGeometry、LatheGeometry），還是載入外部 GLTF 模型？</p>
+
+        <p>對 ProductOrbit 來說，我選了內建幾何體，主要理由是：</p>
+        <ul>
+          <li>不需要額外的模型資產，初次載入更快</li>
+          <li>材質切換更直觀（直接改 material，不用處理 GLTF 的材質結構）</li>
+          <li>幾何體可以程式化生成，針對不同產品形狀靈活調整</li>
+        </ul>
+
+        <p>如果你的目標是展示真實商品（例如鞋子、包包），GLTF 會更合適。但對於抽象產品展示，內建幾何體搭配好的材質，效果完全夠用。</p>
+
+        <h2>PBR 材質：三個數值決定一切</h2>
+
+        <p>PBR（Physically Based Rendering）是讓 3D 物件「看起來真實」的材質系統。Three.js 的 <code>MeshStandardMaterial</code> 就是 PBR 材質，最重要的三個屬性：</p>
+
+        <pre><code>const material = new THREE.MeshStandardMaterial({
+  color: new THREE.Color('#c0a882'),    // 基礎顏色
+  metalness: 0.3,    // 0 = 非金屬, 1 = 純金屬
+  roughness: 0.4,    // 0 = 完全光滑, 1 = 完全粗糙
+  envMapIntensity: 1.2,    // 環境貼圖反射強度
+})</code></pre>
+
+        <p>這三個數值的組合決定了物件的「質感感知」。金屬質感：<code>metalness: 0.8, roughness: 0.2</code>；啞光塑膠：<code>metalness: 0, roughness: 0.8</code>；拋光陶瓷：<code>metalness: 0, roughness: 0.1</code>。</p>
+
+        <div class="note">💡 <strong>envMapIntensity 很重要</strong>，但很多教學忘了提。沒有環境貼圖的情況下設這個值沒意義，但一旦加了 HDRI，這個值的高低會戲劇性地改變物件的視覺質感。我通常從 1.0 開始調，需要更強的反射感就往上加。</div>
+
+        <h2>HDRI 環境貼圖：最有 CP 值的視覺提升</h2>
+
+        <p>如果只能做一件事來讓 3D 物件「看起來真實」，我會選加 HDRI 環境貼圖。它提供了真實世界的光照資訊，讓物件的反射和光影自動「對」起來。</p>
+
+        <pre><code>import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+
+const loader = new RGBELoader()
+loader.load('/hdri/studio-small.hdr', (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping
+  scene.environment = texture   // 用作環境光源
+  scene.background = texture    // 可選：用作背景（通常不用，直接設顏色）
+})</code></pre>
+
+        <p>HDRI 檔案的大小是一個關鍵考量。4K 的 HDR 檔案可以超過 10MB，對首屏載入很不友善。我用的是 1K 的 HDR（通常 300-500KB），在 Three.js 的渲染尺寸下幾乎看不出差異，但載入速度差很多。</p>
+
+        <h3>哪裡找合適的 HDRI</h3>
+        <p>Polyhaven 有大量免費的高品質 HDRI，授權是 CC0（完全免費商用）。Studio 類型的 HDRI 對產品展示最合適，中性的打光不會過度干擾物件本身的顏色。</p>
+
+        <h2>OrbitControls：三個必要的限制</h2>
+
+        <pre><code>import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+
+const controls = new OrbitControls(camera, renderer.domElement)
+
+// 1. 限制垂直旋轉角度，避免用戶轉到底部看到空白
+controls.minPolarAngle = Math.PI * 0.15    // 不能轉太靠近頂部
+controls.maxPolarAngle = Math.PI * 0.85    // 不能轉太靠近底部
+
+// 2. 停用 zoom（產品展示通常不需要縮放）
+controls.enableZoom = false
+
+// 3. 加入阻尼感，讓旋轉更自然
+controls.enableDamping = true
+controls.dampingFactor = 0.08</code></pre>
+
+        <p><code>enableDamping</code> 是個很小的改動，但對用戶體驗影響很大。沒有阻尼的 OrbitControls 旋轉是「即停即止」的，有了阻尼以後會有慣性感，整個互動質感提升很多。記得在 <code>animate()</code> 裡每幀呼叫 <code>controls.update()</code>，阻尼才會生效。</p>
+
+        <h2>行動裝置效能優化：四個有效的策略</h2>
+
+        <p>在桌面版測試沒問題，上到 iPhone 或低端 Android 就掉幀——這是做 WebGL 最常見的傷心故事。我試過幾個策略，實際有效的是這幾個：</p>
+
+        <h3>1. 動態 pixel ratio</h3>
+        <pre><code>// 不要直接用 window.devicePixelRatio
+// 高 DPR 設備（Retina、高端手機）的 GPU 負擔是 DPR^2
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))</code></pre>
+        <p>把 DPR 上限設在 2，即使是 3x、4x 的 Retina 螢幕也只用 2x 渲染。視覺差異幾乎看不出來，但 GPU 負擔可以少掉很多。</p>
+
+        <h3>2. 減少幾何體頂點數</h3>
+        <p>桌面版可以用 128 分段的高精度球體，行動版用 32 分段就夠了。差距在近距離才明顯，旋轉查看的時候幾乎無感。用 userAgent 或 <code>navigator.hardwareConcurrency</code> 判斷設備能力，動態選擇幾何體精度。</p>
+
+        <h3>3. 陰影要謹慎</h3>
+        <p>即時陰影（<code>renderer.shadowMap.enabled = true</code>）是效能殺手之一。如果一定要有陰影感，可以用預先計算的陰影貼圖（baked shadow），或者用一個稍微模糊的橢圓形平面模擬 contact shadow，視覺效果差不多但計算量差很多。</p>
+
+        <h3>4. requestAnimationFrame 的節流</h3>
+        <p>靜止狀態下不需要每秒 60 幀渲染。我在用戶停止互動 2 秒後，把渲染頻率降到 10fps，有互動時再恢復。這對電池壽命和 CPU 溫度都有幫助。</p>
+
+        <blockquote>做 Three.js 最重要的一個心態調整：「在好設備上好看」只完成了一半，「在普通設備上還能用」才是真正的完成。</blockquote>
+
+        <div class="related-posts">
+          <h3>Related Articles</h3>
+          <a href="crdt-indexeddb.html" class="related-link">
+            <span class="rcat">Architecture</span>
+            <span>CRDT + IndexedDB：打造真正離線優先的筆記應用</span>
+          </a>
+          <a href="rag-architecture.html" class="related-link">
+            <span class="rcat">AI / RAG</span>
+            <span>自建 RAG 系統：ONNX 在瀏覽器跑 AI 的全流程</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp; <a href="index.html">Blog</a> &nbsp;·&nbsp; <a href="../portfolio/index.html">Portfolio</a> &nbsp;·&nbsp; <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a></p>
+  </footer>
+</body>
+</html>

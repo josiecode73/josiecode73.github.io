@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glassmorphism 2026：backdrop-filter 的效能代價與真正的使用時機 — JosieCode73</title>
+  <meta name="description" content="在 10 個 app 裡實踐毛玻璃效果之後的真實觀察：backdrop-filter 的 GPU 代價、Safari 的相容性地雷、以及哪些情境根本不適合用 glass UI。" />
+  <link rel="canonical" href="https://josiecode73.github.io/blog/glassmorphism-2026.html" />
+  <meta property="og:title" content="Glassmorphism 2026：backdrop-filter 的效能代價與正確使用方式" />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .article-banner { height: 6px; background: linear-gradient(90deg, #ec4899, #9d174d); }
+    .article-wrap { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,24px); }
+    .article-breadcrumb { font-size: 0.8rem; color: var(--muted-lt); padding: 20px 0 0; display: flex; align-items: center; gap: 6px; }
+    .article-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .article-header { padding: 32px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .article-cat { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9d174d; background: #fce7f3; padding: 3px 9px; border-radius: 4px; margin-bottom: 14px; }
+    .article-header h1 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; line-height: 1.3; color: var(--text-head); letter-spacing: -0.02em; margin-bottom: 14px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted-lt); flex-wrap: wrap; }
+    .article-meta .author-ava { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .article-body { font-size: clamp(0.95rem, 2.2vw, 1.05rem); line-height: 1.85; color: #2d2d2d; padding-bottom: 60px; }
+    .article-body h2 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; color: var(--text-head); margin: 48px 0 16px; letter-spacing: -0.02em; }
+    .article-body h3 { font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; color: var(--text-head); margin: 32px 0 12px; }
+    .article-body p { margin-bottom: 22px; }
+    .article-body a { color: var(--accent); text-decoration: underline; text-decoration-color: #c7d7f9; text-underline-offset: 3px; }
+    .article-body ul, .article-body ol { margin: 0 0 22px 0; padding-left: 24px; }
+    .article-body li { margin-bottom: 8px; }
+    .article-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: #fdf2f8; color: #9d174d; padding: 2px 6px; border-radius: 4px; }
+    .article-body pre { background: #0f172a; color: #e2e8f0; padding: 20px 24px; border-radius: 10px; overflow-x: auto; margin: 24px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.875em; line-height: 1.7; }
+    .article-body pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .article-body blockquote { border-left: 3px solid #ec4899; margin: 28px 0; padding: 4px 0 4px 20px; color: var(--muted); font-style: italic; }
+    .article-body .note { background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body .warn { background: #fff8f0; border: 1px solid #ffd7aa; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+    .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .do-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; }
+    .dont-box { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 16px; }
+    .do-box h4 { color: #166534; font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.04em; }
+    .dont-box h4 { color: #9f1239; font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.04em; }
+    .do-box ul, .dont-box ul { margin: 0; padding-left: 16px; font-size: 0.88rem; }
+    .do-box li, .dont-box li { margin-bottom: 6px; }
+    .related-posts { background: var(--bg-sub); border-radius: 12px; padding: 28px; margin-top: 48px; }
+    .related-posts h3 { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 16px; }
+    .related-link { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; color: inherit; padding: 10px 0; border-bottom: 1px solid var(--border); transition: all 0.12s; }
+    .related-link:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-link:hover span { color: var(--accent); }
+    .related-link .rcat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--muted-lt); letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; min-width: 70px; }
+    .related-link span { font-size: 0.92rem; font-weight: 600; color: var(--text-head); line-height: 1.4; transition: color 0.12s; }
+    @media (max-width: 640px) {
+      .do-dont { grid-template-columns: 1fr; }
+      .article-body pre { padding: 14px 16px; font-size: 0.8em; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="nav-brand"><span class="dot"></span>JosieCode73</a>
+    <ul class="nav-links">
+      <li class="nav-secondary"><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Blog</a></li>
+      <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
+      <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
+    </ul>
+  </nav>
+  <div class="article-banner"></div>
+
+  <main style="padding-top:calc(var(--nav-h) + 6px);">
+    <div class="article-wrap">
+      <div class="article-breadcrumb">
+        <a href="index.html">Blog</a> <span>›</span> <span>UI / UX</span>
+      </div>
+
+      <header class="article-header">
+        <span class="article-cat">UI / UX</span>
+        <h1>Glassmorphism 2026：10 個 App 以後，我總算弄清楚什麼時候不該用它</h1>
+        <div class="article-meta">
+          <div class="author-ava">J</div>
+          <span><strong>JosieCode73</strong></span>
+          <span>·</span>
+          <span>2026 年 1 月</span>
+          <span>·</span>
+          <span>6 min read</span>
+        </div>
+      </header>
+
+      <article class="article-body">
+
+        <p>Glassmorphism 這個詞大概在 2021 年左右開始流行，伴隨著 macOS Big Sur 的視覺語言。四五年後的現在，它沒有消失，但用的人更懂得克制了——至少我是在把十個 app 全部做過一遍以後，才真正懂得克制。</p>
+
+        <p>這篇不是「如何實作毛玻璃效果」的教學，那種文章到處都是。這篇是關於<strong>什麼時候不該用</strong>，以及用的時候要注意哪些實際問題。</p>
+
+        <h2>backdrop-filter 在做什麼（從瀏覽器角度）</h2>
+
+        <p>理解效能問題之前，先理解瀏覽器在做什麼。<code>backdrop-filter</code> 的工作是把元素<em>背後</em>的內容做模糊處理。聽起來簡單，但這件事在渲染流程裡很貴：</p>
+
+        <ol>
+          <li>瀏覽器需要把「背後的內容」先渲染到一個獨立的 layer（合成層）</li>
+          <li>對這個 layer 做 blur 計算（GPU 計算，blur 半徑越大越貴）</li>
+          <li>把模糊後的結果合成到最終畫面</li>
+        </ol>
+
+        <p>這意味著 <code>backdrop-filter</code> 會強制建立一個新的 compositing layer。如果頁面上有很多這樣的元素，記憶體消耗和 GPU 負擔都會顯著上升。</p>
+
+        <h3>blur 值選多少才合理</h3>
+
+        <p>我自己的實測結果（M2 MacBook + Chrome）：</p>
+        <ul>
+          <li><code>blur(4px)</code>：幾乎感受不到效能影響</li>
+          <li><code>blur(8-16px)</code>：視覺效果好，效能可接受的甜蜜區間</li>
+          <li><code>blur(32px)</code> 以上：在低端設備上開始掉幀</li>
+        </ul>
+
+        <p>實際的 glass card CSS 大概長這樣：</p>
+
+        <pre><code>.glass-card {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+
+  /* 重要：幫助瀏覽器優化 */
+  transform: translateZ(0);
+  will-change: auto;    /* 不要預設 will-change: transform，除非這個元素真的會動 */
+}</code></pre>
+
+        <div class="warn">⚠️ <strong>不要在 scroll 容器裡放大量 glass 元素</strong>。每次滾動，瀏覽器需要重新計算每個 glass 元素背後的模糊，這是掉幀的常見原因。</div>
+
+        <h2>Safari 的那些坑</h2>
+
+        <p>Safari 對 <code>backdrop-filter</code> 的支援不算差，但有幾個讓人抓狂的例外：</p>
+
+        <h3>在 SVG 背景上失效</h3>
+        <p>如果你的背景是 SVG（比如內聯 SVG 或 SVG data URL），Safari 的 <code>backdrop-filter</code> 可能完全不工作。這個 bug 在 Safari 17 以後有改善，但還是要測試。</p>
+
+        <h3>在 position: fixed 元素上的問題</h3>
+        <p>固定定位的 nav bar 加 <code>backdrop-filter</code>，在 iOS Safari 上滾動時偶爾會出現閃爍。解法是確保 nav bar 的 <code>z-index</code> 設置合理，並且它的父元素沒有 <code>transform</code> 或 <code>filter</code> 屬性（這會打破 containing block）。</p>
+
+        <h3>-webkit- prefix 還是需要</h3>
+        <p>截至 2026 年，<code>-webkit-backdrop-filter</code> 在 Safari 上仍然是必要的。不加的話某些舊版 Safari 完全沒有效果。</p>
+
+        <h2>Glass UI 的前提條件：背景必須有足夠的對比</h2>
+
+        <p>這個道理簡單，但很多人忘了：<strong>毛玻璃效果在純色背景上沒有意義</strong>。如果背景是 <code>#ffffff</code>，玻璃卡片放上去只是一個帶模糊的白色方塊，看不出任何「透明感」。</p>
+
+        <p>Glass UI 需要背景有：顏色變化、漸層、圖案、或者移動的內容（比如影片背景）。在我的 dark theme app 裡，背景用了帶角度的漸層配合一些低透明度的幾何圖形，這才讓玻璃效果有了意義。</p>
+
+        <div class="do-dont">
+          <div class="do-box">
+            <h4>✓ 適合 Glass UI 的情境</h4>
+            <ul>
+              <li>Dark mode 儀表板（背景有漸層深度）</li>
+              <li>浮動的 modal / tooltip</li>
+              <li>固定 nav bar（背景內容在其下方滾動）</li>
+              <li>短暫出現的 toast 通知</li>
+            </ul>
+          </div>
+          <div class="dont-box">
+            <h4>✗ 不適合的情境</h4>
+            <ul>
+              <li>亮色系純白背景</li>
+              <li>長列表 / 大量卡片（效能問題）</li>
+              <li>低端設備優先的應用</li>
+              <li>需要高對比度的無障礙場景</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>一個讓我改變想法的觀察</h2>
+
+        <p>在做 FlowBoard（看板工具）的時候，我把所有卡片都做成 glass 效果，覺得很美。然後讓幾個朋友用了一下，收到的回饋是：「卡片跟背景的邊界不清楚，有點難判斷哪個是卡片」。</p>
+
+        <p>後來我把一般卡片改回純色，只保留 modal 和 nav bar 的 glass，整體可用性反而更好。</p>
+
+        <blockquote>Glass UI 是個強調「氛圍」的設計語言，不是強調「資訊」的。如果你的 UI 需要用戶快速判斷、點擊、做決策，清晰的邊界比漂亮的毛玻璃更重要。</blockquote>
+
+        <h2>2026 年的現實：它已經是 baseline</h2>
+
+        <p><code>backdrop-filter</code> 的瀏覽器支援率在 2026 年已經超過 95%。你不再需要為「要不要用」這個問題糾結太久，更值得思考的是「在哪裡用、用多少」。</p>
+
+        <p>我的最終建議是：把 glass 效果保留給<em>浮在內容上方的</em>元素（nav、modal、dropdown），不要把它用在<em>作為內容容器的</em>元素（文章卡片、資料列表）。這個原則讓效能問題消失的同時，可用性也更好。</p>
+
+        <div class="related-posts">
+          <h3>Related Articles</h3>
+          <a href="vite-tailwind-v4.html" class="related-link">
+            <span class="rcat">Frontend</span>
+            <span>Vite + Tailwind CSS v4 完整設定指南</span>
+          </a>
+          <a href="render-deploy.html" class="related-link">
+            <span class="rcat">DevOps</span>
+            <span>Render 部署 10 個 React App 的自動化工作流程</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp;
+      <a href="index.html">Blog</a> &nbsp;·&nbsp;
+      <a href="../portfolio/index.html">Portfolio</a> &nbsp;·&nbsp;
+      <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a>
+    </p>
+  </footer>
+</body>
+</html>

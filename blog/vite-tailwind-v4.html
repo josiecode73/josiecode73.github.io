@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + Tailwind CSS v4 完整設定指南：升級踩坑紀錄 — JosieCode73</title>
+  <meta name="description" content="從 pnpm monorepo 升級 Tailwind CSS v4 的完整踩坑紀錄。Lightning CSS、@theme 指令、@source 設定、以及 3 個讓你愣住的地方——我幫你先踩完了。" />
+  <link rel="canonical" href="https://josiecode73.github.io/blog/vite-tailwind-v4.html" />
+  <meta property="og:title" content="Vite + Tailwind CSS v4 完整設定指南" />
+  <meta property="og:description" content="升級 Tailwind v4 的真實踩坑紀錄：CSS-first 設定、Lightning CSS、monorepo @source 指令。" />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .article-banner { height: 6px; background: linear-gradient(90deg, #3b82f6, #1e40af); }
+    .article-wrap { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,24px); }
+    .article-breadcrumb { font-size: 0.8rem; color: var(--muted-lt); padding: 20px 0 0; display: flex; align-items: center; gap: 6px; }
+    .article-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .article-breadcrumb a:hover { text-decoration: underline; }
+    .article-header { padding: 32px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .article-cat { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1d4ed8; background: #dbeafe; padding: 3px 9px; border-radius: 4px; margin-bottom: 14px; }
+    .article-header h1 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; line-height: 1.3; color: var(--text-head); letter-spacing: -0.02em; margin-bottom: 14px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted-lt); flex-wrap: wrap; }
+    .article-meta .author-ava { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #3d63dd, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .article-body { font-size: clamp(0.95rem, 2.2vw, 1.05rem); line-height: 1.85; color: #2d2d2d; padding-bottom: 60px; }
+    .article-body h2 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; color: var(--text-head); margin: 48px 0 16px; padding-top: 4px; letter-spacing: -0.02em; }
+    .article-body h3 { font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; color: var(--text-head); margin: 32px 0 12px; }
+    .article-body p { margin-bottom: 22px; }
+    .article-body a { color: var(--accent); text-decoration: underline; text-decoration-color: #c7d7f9; text-underline-offset: 3px; }
+    .article-body a:hover { text-decoration-color: var(--accent); }
+    .article-body ul, .article-body ol { margin: 0 0 22px 0; padding-left: 24px; }
+    .article-body li { margin-bottom: 8px; }
+    .article-body code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.88em; background: #f1f5f9; color: #1e40af; padding: 2px 6px; border-radius: 4px; }
+    .article-body pre { background: #0f172a; color: #e2e8f0; padding: 20px 24px; border-radius: 10px; overflow-x: auto; margin: 24px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.875em; line-height: 1.7; }
+    .article-body pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .article-body blockquote { border-left: 3px solid var(--accent); margin: 28px 0; padding: 4px 0 4px 20px; color: var(--muted); font-style: italic; }
+    .article-body .note { background: #f0f7ff; border: 1px solid #bcd4f8; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body .warn { background: #fff8f0; border: 1px solid #ffd7aa; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+    .related-posts { background: var(--bg-sub); border-radius: 12px; padding: 28px; margin-top: 48px; }
+    .related-posts h3 { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 16px; }
+    .related-link { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; color: inherit; padding: 10px 0; border-bottom: 1px solid var(--border); transition: all 0.12s; }
+    .related-link:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-link:hover span { color: var(--accent); }
+    .related-link .rcat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--muted-lt); letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; min-width: 70px; }
+    .related-link span { font-size: 0.92rem; font-weight: 600; color: var(--text-head); line-height: 1.4; transition: color 0.12s; }
+    @media (max-width: 640px) {
+      .article-body pre { padding: 14px 16px; font-size: 0.8em; border-radius: 8px; }
+      .article-body h2 { margin-top: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="nav-brand"><span class="dot"></span>JosieCode73</a>
+    <ul class="nav-links">
+      <li class="nav-secondary"><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Blog</a></li>
+      <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
+      <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
+    </ul>
+  </nav>
+  <div class="article-banner"></div>
+
+  <main style="padding-top:calc(var(--nav-h) + 6px);">
+    <div class="article-wrap">
+      <div class="article-breadcrumb">
+        <a href="index.html">Blog</a> <span>›</span> <span>Frontend</span>
+      </div>
+
+      <header class="article-header">
+        <span class="article-cat">Frontend</span>
+        <h1>Vite + Tailwind CSS v4：我踩過的坑與你需要的那份設定</h1>
+        <div class="article-meta">
+          <div class="author-ava">J</div>
+          <span><strong>JosieCode73</strong></span>
+          <span>·</span>
+          <span>2026 年 2 月</span>
+          <span>·</span>
+          <span>8 min read</span>
+        </div>
+      </header>
+
+      <article class="article-body">
+
+        <p>把 monorepo 裡 10 個 app 從 Tailwind v3 全部升上 v4 以後，我最大的感受是：<strong>升級這件事本身不難，但設定思路要整個重來</strong>。v4 表面上跟 v3 很像，卻在關鍵幾個地方換了玩法。如果你帶著舊直覺走進去，可能會在很奇怪的地方卡住。</p>
+
+        <p>這篇不是「照著做就好」的教學，而是我在實際升級過程裡發現的幾個反直覺的地方，加上一份可以直接套用的 monorepo 設定。</p>
+
+        <h2>CSS-first：最根本的思路轉換</h2>
+
+        <p>v3 的時代，所有設定都放在 <code>tailwind.config.js</code>（或 <code>.ts</code>）：顏色、間距、字型、plugins 全部在那一份 JS 物件裡。v4 把這個設計翻掉了。</p>
+
+        <p>v4 的設定「住」在 CSS 裡，不是 JS 裡。你的主要入口 CSS 長這樣：</p>
+
+        <pre><code>@import "tailwindcss";
+
+@theme {
+  --color-brand:     #3d63dd;
+  --color-brand-dark:#2f52c0;
+  --font-sans:       'Inter', system-ui, sans-serif;
+  --font-display:    'Lora', Georgia, serif;
+  --radius-card:     12px;
+  --spacing-section: 64px;
+}</code></pre>
+
+        <p>定義完以後，這些 token 直接對應到 utility class：<code>text-brand</code>、<code>font-display</code>、<code>rounded-card</code>。不需要在 config 裡特別 extend。</p>
+
+        <p>這個轉變比想像中更根本，因為它改變了「設計系統住在哪裡」的問題。以前設計 token 住在 JS，現在住在 CSS。對喜歡 CSS variables 的人來說很直觀，但如果你習慣用 JS 做動態配置（例如根據環境變數切換 theme），需要調整一下思路。</p>
+
+        <div class="note">💡 <strong>tailwind.config.js 沒有消失</strong>，只是變成可選的。如果你有複雜的 plugin 需求或 content 路徑設定，它還是可以用。但基本用法完全不需要它了。</div>
+
+        <h2>安裝流程（pnpm + Vite，對的那個版本）</h2>
+
+        <p>v4 的 Vite 整合方式改了。不再透過 PostCSS，改用原生 Vite plugin：</p>
+
+        <pre><code># 注意：tailwindcss@next，直到正式版釋出前
+pnpm add -D tailwindcss@next @tailwindcss/vite</code></pre>
+
+        <p>然後在 <code>vite.config.ts</code>：</p>
+
+        <pre><code>import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),   // 就這樣，不需要其他設定
+  ],
+})</code></pre>
+
+        <p><strong>PostCSS 設定可以完全移除</strong>。之前的 <code>postcss.config.js</code> 裡的 <code>tailwindcss</code> 和 <code>autoprefixer</code> 都不再需要了——v4 透過 Lightning CSS 處理這些。</p>
+
+        <div class="warn">⚠️ 如果你的專案還有其他 PostCSS 插件（例如 <code>postcss-import</code>），要確認它們跟 Lightning CSS 模式相容。我遇過一次衝突，症狀是 CSS 變數值被覆蓋，但 build 不報錯，debug 花了一段時間。</div>
+
+        <h2>Lightning CSS：你不需要懂它，但要知道一件事</h2>
+
+        <p>Lightning CSS 是 Rust 寫的 CSS 編譯器，v4 預設用它來做 vendor prefix、CSS 嵌套語法展開、以及現代 CSS 特性的 polyfill。速度比 PostCSS 快很多（Rust 嘛），大部分情況下你不需要特別配置它。</p>
+
+        <p>但有一件事要知道：<strong>Lightning CSS 預設的瀏覽器 target 不一定跟你的 Browserslist 對齊</strong>。如果你有明確的瀏覽器支援需求（比如某個企業客戶的 IE11 祖先機台），需要在設定裡明確指定。</p>
+
+        <h2>Monorepo 下的 @source 指令（這才是重點）</h2>
+
+        <p>在單一 package 的專案，Tailwind 可以自動找到你的 HTML/TSX 檔案並做 class purging。但在 monorepo 裡，這個自動偵測有時會失效——特別是當你的 UI 元件住在另一個 package，透過 symlink 引用進來的時候。</p>
+
+        <p>症狀很詭異：build 沒報錯，但某些 class 在生產環境不見了。開發環境正常是因為 HMR 沒有走 purging。</p>
+
+        <p>解法是在 CSS 裡明確宣告 source 路徑：</p>
+
+        <pre><code>@import "tailwindcss";
+
+/* 讓 Tailwind 掃描 workspace 裡的其他 package */
+@source "../../packages/ui/src/**/*.{tsx,ts}";
+@source "../../packages/shared/src/**/*.{tsx,ts}";
+
+@theme {
+  /* ... */
+}</code></pre>
+
+        <p>這個指令告訴 v4 去哪裡找 class 名稱，解決 symlink 環境下掃描不到的問題。</p>
+
+        <h2>我遇到的三個反直覺問題</h2>
+
+        <h3>1. @theme 不能放在 media query 裡</h3>
+        <p>我試過把部分 token 放在 <code>@media (prefers-color-scheme: dark)</code> 裡來做 dark mode，直接失效。<code>@theme</code> 只能在 CSS 最外層（global scope），不能嵌套。Dark mode token 要用 CSS 變數覆蓋的方式做：</p>
+        <pre><code>@theme {
+  --color-bg: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0f172a;
+}</code></pre>
+
+        <h3>2. JIT 的掃描範圍比 v3 更保守</h3>
+        <p>v3 的 JIT 在 content 路徑設定正確的情況下會大量掃描，v4 更傾向「只掃我看得到的」。動態 class 名稱（比如 <code>`text-${color}`</code> 拼接的字串）一樣不會被掃到，這點跟 v3 一樣——但要更注意 monorepo 跨 package 的情況。</p>
+
+        <h3>3. 原本用 @apply 的地方可能要重寫</h3>
+        <p>v4 的 <code>@apply</code> 還是可以用，但在某些情況下行為跟 v3 不太一樣，尤其是跟自訂 <code>@theme</code> token 混用時。我有幾個元件的 <code>@apply</code> 在升級後失效，最後直接改成 CSS 變數就解決了。</p>
+
+        <hr />
+
+        <h2>值得升嗎？</h2>
+
+        <p>對於新專案：直接用 v4，沒有理由用 v3 了。</p>
+
+        <p>對於現有專案：值得升，但不要在衝刺期做。給自己一兩天時間，先在一個小 app 上試跑，確認所有 class 在 build 後都正常，再推到其他 package。</p>
+
+        <p>體感上，本地的 HMR 快了 30% 左右，build time 差不多，但 CSS bundle size 稍微縮小了（Lightning CSS 的 tree-shaking 比 PostCSS 更精準）。整體開發體驗是好的。</p>
+
+        <blockquote>最讓我喜歡 v4 的地方不是速度，是「設計 token 住在 CSS 裡」這件事。設計師看得懂 CSS，但不一定看得懂 JS config。這個改變讓設計與開發的溝通多了一個共同語言。</blockquote>
+
+        <div class="related-posts">
+          <h3>Related Articles</h3>
+          <a href="glassmorphism-2026.html" class="related-link">
+            <span class="rcat">UI / UX</span>
+            <span>Glassmorphism 2026：backdrop-filter 的效能代價與正確使用方式</span>
+          </a>
+          <a href="render-deploy.html" class="related-link">
+            <span class="rcat">DevOps</span>
+            <span>Render 部署 10 個 React App 的自動化工作流程</span>
+          </a>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp;
+      <a href="index.html">Blog</a> &nbsp;·&nbsp;
+      <a href="../portfolio/index.html">Portfolio</a> &nbsp;·&nbsp;
+      <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a>
+    </p>
+  </footer>
+</body>
+</html>

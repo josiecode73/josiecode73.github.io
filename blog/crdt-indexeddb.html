@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRDT + IndexedDB：為什麼 NoteVault 不用 localStorage — JosieCode73</title>
+  <meta name="description" content="為什麼 NoteVault 選擇 Yjs CRDT + IndexedDB 而不是 localStorage？離線優先應用的資料一致性挑戰、衝突解決策略、以及 Service Worker 的快取設計。" />
+  <link rel="canonical" href="https://josiecode73.github.io/blog/crdt-indexeddb.html" />
+  <meta property="og:title" content="CRDT + IndexedDB：打造真正離線優先的筆記應用" />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .article-banner { height: 6px; background: linear-gradient(90deg, #f59e0b, #92400e); }
+    .article-wrap { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,24px); }
+    .article-breadcrumb { font-size: 0.8rem; color: var(--muted-lt); padding: 20px 0 0; display: flex; align-items: center; gap: 6px; }
+    .article-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .article-header { padding: 32px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .article-cat { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #92400e; background: #fef3c7; padding: 3px 9px; border-radius: 4px; margin-bottom: 14px; }
+    .article-header h1 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; line-height: 1.3; color: var(--text-head); letter-spacing: -0.02em; margin-bottom: 14px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted-lt); flex-wrap: wrap; }
+    .article-meta .author-ava { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ea580c); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .article-body { font-size: clamp(0.95rem, 2.2vw, 1.05rem); line-height: 1.85; color: #2d2d2d; padding-bottom: 60px; }
+    .article-body h2 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; color: var(--text-head); margin: 48px 0 16px; letter-spacing: -0.02em; }
+    .article-body h3 { font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; color: var(--text-head); margin: 32px 0 12px; }
+    .article-body p { margin-bottom: 22px; }
+    .article-body a { color: var(--accent); text-decoration: underline; text-decoration-color: #c7d7f9; text-underline-offset: 3px; }
+    .article-body ul, .article-body ol { margin: 0 0 22px 0; padding-left: 24px; }
+    .article-body li { margin-bottom: 8px; }
+    .article-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: #fffbeb; color: #92400e; padding: 2px 6px; border-radius: 4px; }
+    .article-body pre { background: #0f172a; color: #e2e8f0; padding: 20px 24px; border-radius: 10px; overflow-x: auto; margin: 24px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.875em; line-height: 1.7; }
+    .article-body pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .article-body blockquote { border-left: 3px solid #f59e0b; margin: 28px 0; padding: 4px 0 4px 20px; color: var(--muted); font-style: italic; }
+    .article-body .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body .warn { background: #fff8f0; border: 1px solid #ffd7aa; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+    .compare-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 0.9rem; }
+    .compare-table th { background: var(--bg-sub); padding: 10px 14px; text-align: left; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; color: var(--muted); border-bottom: 2px solid var(--border); }
+    .compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); vertical-align: top; line-height: 1.6; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .related-posts { background: var(--bg-sub); border-radius: 12px; padding: 28px; margin-top: 48px; }
+    .related-posts h3 { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 16px; }
+    .related-link { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; color: inherit; padding: 10px 0; border-bottom: 1px solid var(--border); transition: all 0.12s; }
+    .related-link:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-link:hover span { color: var(--accent); }
+    .related-link .rcat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--muted-lt); letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; min-width: 70px; }
+    .related-link span { font-size: 0.92rem; font-weight: 600; color: var(--text-head); line-height: 1.4; transition: color 0.12s; }
+    @media (max-width: 640px) { .article-body pre { padding: 14px 16px; font-size: 0.8em; } .compare-table { font-size: 0.82rem; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="nav-brand"><span class="dot"></span>JosieCode73</a>
+    <ul class="nav-links">
+      <li class="nav-secondary"><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Blog</a></li>
+      <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
+      <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
+    </ul>
+  </nav>
+  <div class="article-banner"></div>
+
+  <main style="padding-top:calc(var(--nav-h) + 6px);">
+    <div class="article-wrap">
+      <div class="article-breadcrumb">
+        <a href="index.html">Blog</a> <span>›</span> <span>Architecture</span>
+      </div>
+      <header class="article-header">
+        <span class="article-cat">Architecture</span>
+        <h1>CRDT + IndexedDB：為什麼 NoteVault 不用 localStorage，以及這個決定的代價</h1>
+        <div class="article-meta">
+          <div class="author-ava">J</div>
+          <span><strong>JosieCode73</strong></span>
+          <span>·</span>
+          <span>2026 年 2 月</span>
+          <span>·</span>
+          <span>9 min read</span>
+        </div>
+      </header>
+      <article class="article-body">
+
+        <p>NoteVault 的目標是「真正的離線優先」——不是「有網路才能用，斷網還行」，而是「斷網跟有網路用起來一模一樣」。這個目標讓我一路從 localStorage 走到 IndexedDB，再走到 Yjs CRDT，每一步的轉換都有具體的原因。</p>
+
+        <h2>為什麼不用 localStorage</h2>
+
+        <p>localStorage 的問題有三個，按嚴重程度排列：</p>
+
+        <ol>
+          <li><strong>同步 API 阻塞主執行緒</strong>。<code>localStorage.getItem()</code> 在 I/O 慢的設備上（某些 Android 機）真的可以讓 UI 明顯卡頓。</li>
+          <li><strong>5MB 上限</strong>（大部分瀏覽器）。用戶上傳圖片或儲存大量筆記，很快就會碰到這個天花板。</li>
+          <li><strong>只能儲存字串</strong>。Binary 資料要先 base64 encode，blob 直接放不進去。</li>
+        </ol>
+
+        <p>IndexedDB 解決了這三個問題：非同步 API、幾乎無限容量（通常是磁碟空間的 50%）、可以儲存任何 JavaScript 物件包括 ArrayBuffer 和 Blob。</p>
+
+        <h2>IndexedDB 的使用體驗：沒有你想的那麼痛</h2>
+
+        <p>IndexedDB 的原生 API 確實繁瑣，但在 2026 年你不需要直接用原生 API。<code>idb</code> 這個 wrapper（Jake Archibald 維護）把 IndexedDB 包成 Promise-based 的乾淨介面：</p>
+
+        <pre><code>import { openDB } from 'idb'
+
+const db = await openDB('notevault', 1, {
+  upgrade(db) {
+    const store = db.createObjectStore('notes', { keyPath: 'id' })
+    store.createIndex('updatedAt', 'updatedAt')
+    store.createIndex('folderId', 'folderId')
+  }
+})
+
+// 讀寫跟一般 async/await 一樣自然
+const note = await db.get('notes', noteId)
+await db.put('notes', { ...note, content: newContent, updatedAt: Date.now() })</code></pre>
+
+        <h2>為什麼需要 CRDT</h2>
+
+        <p>離線優先的核心問題是：如果用戶在手機和電腦上都修改了同一篇筆記，重新連線以後要以哪個版本為準？</p>
+
+        <p>最簡單的策略是 Last-Write-Wins（LWW）：以時間戳較晚的版本為準。這能解決大部分情況，但有一個致命弱點：如果兩個裝置的系統時鐘不同步（這比你想的更常見），或者兩個裝置幾乎同時修改了不同的段落，LWW 會丟失其中一方的修改。</p>
+
+        <p>CRDT（Conflict-free Replicated Data Type）的設計目標就是讓「合併」這件事永遠有一個正確、確定的結果，不管修改的順序如何。</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>策略</th><th>優點</th><th>缺點</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Last-Write-Wins</strong></td><td>實作簡單</td><td>可能丟失資料；依賴時鐘同步</td></tr>
+            <tr><td><strong>Operational Transform</strong></td><td>Google Docs 的方案，成熟</td><td>實作複雜；需要中央伺服器協調</td></tr>
+            <tr><td><strong>CRDT</strong></td><td>無需中央伺服器；合併永遠收斂</td><td>實作複雜；資料結構有額外開銷</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Yjs：選它的理由</h2>
+
+        <p>2026 年主流的前端 CRDT 函式庫有兩個：Yjs 和 Automerge。我選 Yjs 的主要理由：</p>
+
+        <ul>
+          <li><strong>Bundle size 更小</strong>：Yjs 約 30KB，Automerge v2 約 280KB（WASM 版）</li>
+          <li><strong>與 ProseMirror / Tiptap 的整合成熟</strong>：如果你用富文字編輯器，Yjs 的生態系更完整</li>
+          <li><strong>效能</strong>：在大型文件上，Yjs 的操作速度通常優於 Automerge</li>
+        </ul>
+
+        <pre><code>import * as Y from 'yjs'
+import { IndexeddbPersistence } from 'y-indexeddb'
+
+const ydoc = new Y.Doc()
+
+// 自動把 CRDT 狀態持久化到 IndexedDB
+const persistence = new IndexeddbPersistence('note-' + noteId, ydoc)
+
+// 等待 IndexedDB 載入完成
+await persistence.whenSynced
+
+// 操作文件內容
+const ytext = ydoc.getText('content')
+ytext.insert(0, 'Hello, world')</code></pre>
+
+        <p><code>y-indexeddb</code> 這個包幫你把 Yjs 的狀態自動存到 IndexedDB，並在載入時自動恢復。你不需要手動管理同步，只需要操作 <code>YText</code>、<code>YArray</code>、<code>YMap</code> 等 CRDT 資料結構。</p>
+
+        <h2>Service Worker：讓離線真正成立</h2>
+
+        <p>IndexedDB 解決了「資料存哪裡」，但如果你的 React app 本身載入不到（網路斷線時 HTML/JS/CSS 都載不下來），一切都是空談。</p>
+
+        <p>Service Worker 的工作是把 app shell（HTML、JS bundle、CSS）快取起來，讓它在完全離線的狀態下也能打開。我用的是 Vite 的 <code>vite-plugin-pwa</code>，設定非常少：</p>
+
+        <pre><code>// vite.config.ts
+import { VitePWA } from 'vite-plugin-pwa'
+
+export default defineConfig({
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // 動態快取：API 回應、字型等
+        runtimeCaching: [{
+          urlPattern: /^https:\/\/fonts\.googleapis\.com/,
+          handler: 'StaleWhileRevalidate',
+        }]
+      }
+    })
+  ]
+})</code></pre>
+
+        <h2>這個方案的代價</h2>
+
+        <p>說清楚代價很重要，因為 CRDT 不是免費的午餐：</p>
+
+        <ul>
+          <li><strong>Tombstone 堆積</strong>：CRDT 刪除操作不是真的刪除，而是標記（tombstone），長期使用後文件狀態會越來越大</li>
+          <li><strong>初始化時間</strong>：大型文件首次載入時，CRDT 需要重播所有操作歷史，可能有幾百毫秒的延遲</li>
+          <li><strong>除錯難度高</strong>：CRDT 的狀態不是人讀的，出了問題很難直接看到「哪裡錯了」</li>
+        </ul>
+
+        <blockquote>如果你的應用不需要多設備同步，只是單純要離線讀寫，localStorage 或 IndexedDB + 簡單 JSON 就夠了。CRDT 的複雜度只有在「多個地方可能同時修改同一份資料」的情境下才真正值得。</blockquote>
+
+        <div class="related-posts">
+          <h3>Related Articles</h3>
+          <a href="rag-architecture.html" class="related-link">
+            <span class="rcat">AI / RAG</span>
+            <span>自建 RAG 系統：ONNX 在瀏覽器跑 AI 的全流程</span>
+          </a>
+          <a href="render-deploy.html" class="related-link">
+            <span class="rcat">DevOps</span>
+            <span>Render 部署 10 個 React App 的自動化工作流程</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp; <a href="index.html">Blog</a> &nbsp;·&nbsp; <a href="../portfolio/index.html">Portfolio</a> &nbsp;·&nbsp; <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a></p>
+  </footer>
+</body>
+</html>

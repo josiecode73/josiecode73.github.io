@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Render 部署 10 個 React App：一個 CI 設定讓我省了 3 小時 — JosieCode73</title>
+  <meta name="description" content="在 pnpm monorepo 裡管理 10 個獨立 Render 服務的完整流程：build command 設定、Root Directory 技巧、Render API 觸發部署、以及 cold start 的實用對策。" />
+  <link rel="canonical" href="https://josiecode73.github.io/blog/render-deploy.html" />
+  <meta property="og:title" content="Render 部署 10 個 React App 的自動化工作流程" />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .article-banner { height: 6px; background: linear-gradient(90deg, #06b6d4, #0e7490); }
+    .article-wrap { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,24px); }
+    .article-breadcrumb { font-size: 0.8rem; color: var(--muted-lt); padding: 20px 0 0; display: flex; align-items: center; gap: 6px; }
+    .article-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .article-header { padding: 32px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .article-cat { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #0e7490; background: #cffafe; padding: 3px 9px; border-radius: 4px; margin-bottom: 14px; }
+    .article-header h1 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; line-height: 1.3; color: var(--text-head); letter-spacing: -0.02em; margin-bottom: 14px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted-lt); flex-wrap: wrap; }
+    .article-meta .author-ava { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #06b6d4, #0891b2); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .article-body { font-size: clamp(0.95rem, 2.2vw, 1.05rem); line-height: 1.85; color: #2d2d2d; padding-bottom: 60px; }
+    .article-body h2 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; color: var(--text-head); margin: 48px 0 16px; letter-spacing: -0.02em; }
+    .article-body h3 { font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; color: var(--text-head); margin: 32px 0 12px; }
+    .article-body p { margin-bottom: 22px; }
+    .article-body a { color: var(--accent); text-decoration: underline; text-decoration-color: #c7d7f9; text-underline-offset: 3px; }
+    .article-body ul, .article-body ol { margin: 0 0 22px 0; padding-left: 24px; }
+    .article-body li { margin-bottom: 8px; }
+    .article-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: #ecfeff; color: #0e7490; padding: 2px 6px; border-radius: 4px; }
+    .article-body pre { background: #0f172a; color: #e2e8f0; padding: 20px 24px; border-radius: 10px; overflow-x: auto; margin: 24px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.875em; line-height: 1.7; }
+    .article-body pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .article-body blockquote { border-left: 3px solid #06b6d4; margin: 28px 0; padding: 4px 0 4px 20px; color: var(--muted); font-style: italic; }
+    .article-body .note { background: #ecfeff; border: 1px solid #a5f3fc; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body .warn { background: #fff8f0; border: 1px solid #ffd7aa; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+    .related-posts { background: var(--bg-sub); border-radius: 12px; padding: 28px; margin-top: 48px; }
+    .related-posts h3 { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 16px; }
+    .related-link { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; color: inherit; padding: 10px 0; border-bottom: 1px solid var(--border); transition: all 0.12s; }
+    .related-link:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-link:hover span { color: var(--accent); }
+    .related-link .rcat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--muted-lt); letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; min-width: 70px; }
+    .related-link span { font-size: 0.92rem; font-weight: 600; color: var(--text-head); line-height: 1.4; transition: color 0.12s; }
+    @media (max-width: 640px) { .article-body pre { padding: 14px 16px; font-size: 0.8em; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="nav-brand"><span class="dot"></span>JosieCode73</a>
+    <ul class="nav-links">
+      <li class="nav-secondary"><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Blog</a></li>
+      <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
+      <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
+    </ul>
+  </nav>
+  <div class="article-banner"></div>
+
+  <main style="padding-top:calc(var(--nav-h) + 6px);">
+    <div class="article-wrap">
+      <div class="article-breadcrumb">
+        <a href="index.html">Blog</a> <span>›</span> <span>DevOps</span>
+      </div>
+      <header class="article-header">
+        <span class="article-cat">DevOps</span>
+        <h1>Render 部署 10 個 React App：monorepo 的正確設定方式，以及 cold start 的對策</h1>
+        <div class="article-meta">
+          <div class="author-ava">J</div>
+          <span><strong>JosieCode73</strong></span>
+          <span>·</span>
+          <span>2026 年 3 月</span>
+          <span>·</span>
+          <span>7 min read</span>
+        </div>
+      </header>
+      <article class="article-body">
+
+        <p>把 10 個 app 部署到 Render 的過程，最費時的不是部署本身，而是搞清楚「pnpm monorepo + Render」的正確設定組合。官方文件對 monorepo 的說明有點語焉不詳，踩了幾個坑以後才找到真正有效的方式。</p>
+
+        <h2>Render 靜態網站（Static Site）的 monorepo 設定</h2>
+
+        <p>在 Render 建立每個 app 的 Static Site 時，最重要的兩個設定：</p>
+
+        <h3>Root Directory</h3>
+        <p>把 Root Directory 設成你的 app 目錄（例如 <code>kanban-board</code>），這樣 Render 的 build 環境會以這個目錄為工作目錄。</p>
+
+        <div class="warn">⚠️ <strong>不要把 Root Directory 設成 repo 根目錄然後在 build command 裡 cd 進去</strong>。這樣做會讓 Render 看不到 monorepo 根目錄的 <code>pnpm-workspace.yaml</code> 和 <code>package.json</code>，導致依賴解析失敗。</div>
+
+        <h3>Build Command</h3>
+        <p>在 Root Directory 設好以後，build command 要回到 repo 根目錄安裝依賴，再 build 特定 app：</p>
+
+        <pre><code>cd .. && pnpm install --frozen-lockfile && pnpm --filter kanban-board build</code></pre>
+
+        <p>這個 <code>cd ..</code> 很關鍵。它讓 pnpm 在 workspace 根目錄執行 <code>install</code>，正確解析所有 workspace 依賴，然後用 <code>--filter</code> 只 build 目標 app。</p>
+
+        <h3>Publish Directory</h3>
+        <p>設成 <code>dist</code>（Vite 的預設輸出目錄）。如果你用了自訂 <code>build.outDir</code>，就改成對應路徑。</p>
+
+        <h2>BASE_PATH 的必要性</h2>
+
+        <p>Render 的每個 Static Site 都有獨立的 subdomain（例如 <code>kanban-board.onrender.com</code>），所以 app 本身在根路徑（<code>/</code>）運行，不需要設 base path。</p>
+
+        <p>但如果你的部署需要讓多個 app 在同一個 domain 的不同子路徑下運行（例如透過 nginx reverse proxy），就必須設 <code>BASE_PATH</code>：</p>
+
+        <pre><code># 在 vite.config.ts 讀取環境變數
+export default defineConfig({
+  base: process.env.BASE_PATH ?? '/',
+})</code></pre>
+
+        <pre><code># Build 時傳入
+BASE_PATH=/kanban-board/ pnpm --filter kanban-board build</code></pre>
+
+        <h2>Render API：程式化觸發部署</h2>
+
+        <p>10 個 app 手動點「Deploy」這件事做一次還好，但需要批次更新（例如升 React 版本）的時候，Render API 就很有用了。</p>
+
+        <pre><code># 觸發特定 service 的 deploy
+curl -X POST \
+  -H "Authorization: Bearer $RENDER_API_KEY" \
+  "https://api.render.com/v1/services/{serviceId}/deploys" \
+  -H "Content-Type: application/json" \
+  -d '{"clearCache": false}'</code></pre>
+
+        <p>把 10 個 service ID 存成一個列表，寫個小腳本批次觸發，所有 app 就會開始同時部署。Render 的免費方案允許並行部署，付費方案的並行數量更多。</p>
+
+        <div class="note">💡 <strong>Service ID 在哪裡找</strong>：Render 控制台的 service 頁面，URL 裡的 <code>srv-xxxxx</code> 就是 service ID。或者用 Render API 的 <code>GET /services</code> endpoint 列出所有 service。</div>
+
+        <h2>Cold Start：免費方案的現實</h2>
+
+        <p>Render 免費方案的 Static Site 沒有 cold start 問題，因為靜態文件隨時都在。但如果你的 app 有後端（Express、FastAPI 等），免費方案在 15 分鐘無流量後會 spin down，下一個請求需要等 20-30 秒才能回應。</p>
+
+        <p>幾個常見的對策：</p>
+
+        <ul>
+          <li><strong>Cron job ping</strong>：每 10 分鐘用 cron 服務（如 cron-job.org）打一個 health check 請求，讓服務保持活躍。免費但有點 hack。</li>
+          <li><strong>付費 plan</strong>：Render 的 Starter plan（$7/月）可以避免 spin down。</li>
+          <li><strong>顯示 loading 狀態</strong>：在前端顯示「正在喚醒服務...」的訊息，讓用戶知道在等待，比無聲地等 30 秒好很多。</li>
+        </ul>
+
+        <h3>靜態 app 的 health check</h3>
+        <p>對純靜態 app，Render 沒有 cold start，但你可以在 Render 設定一個 health check 路徑，讓監控工具確認 app 是否正常上線：</p>
+
+        <pre><code>/* 在 vite.config.ts 加一個簡單的 health 路由 */
+/* 或者直接用 public/health.json */
+// public/health.json
+{ "status": "ok", "version": "1.0.0" }</code></pre>
+
+        <h2>環境變數管理</h2>
+
+        <p>10 個 app 各有各的環境變數，Render 的 Environment Groups 功能可以讓你建立共享的環境變數組，讓多個 service 都能用到相同的值（例如 Analytics ID、Feature Flags）。</p>
+
+        <p>設定方式：Render 控制台 → Environment Groups → 建立 group → 在各 service 裡 Link 這個 group。更新 group 的值以後，所有 linked service 都會自動觸發重新部署。</p>
+
+        <blockquote>整個部署流程設置好以後，從 git push 到所有 10 個 app 上線大概需要 5-8 分鐘（pnpm install 最花時間）。Render 的 cache 機制在 node_modules 沒有變動時可以顯著縮短這個時間，所以儘量用 --frozen-lockfile 確保 lockfile 一致。</blockquote>
+
+        <div class="related-posts">
+          <h3>Related Articles</h3>
+          <a href="vite-tailwind-v4.html" class="related-link">
+            <span class="rcat">Frontend</span>
+            <span>Vite + Tailwind CSS v4：從 monorepo 升級的完整指南</span>
+          </a>
+          <a href="glassmorphism-2026.html" class="related-link">
+            <span class="rcat">UI / UX</span>
+            <span>Glassmorphism 2026：backdrop-filter 的效能代價</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp; <a href="index.html">Blog</a> &nbsp;·&nbsp; <a href="../portfolio/index.html">Portfolio</a> &nbsp;·&nbsp; <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a></p>
+  </footer>
+</body>
+</html>

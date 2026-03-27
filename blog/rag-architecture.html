@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自建 RAG 系統全流程：ONNX 在瀏覽器跑 AI 的踩坑記 — JosieCode73</title>
+  <meta name="description" content="不靠 OpenAI API，用 ONNX Runtime Web 在瀏覽器端執行 Embedding 模型、自建向量搜索、組裝 Context 的完整 RAG 架構解析。包含 chunking 策略、cosine similarity 實作、Context Window 管理。" />
+  <link rel="canonical" href="https://josiecode73.github.io/blog/rag-architecture.html" />
+  <meta property="og:title" content="自建 RAG 系統：ONNX Runtime Web 在瀏覽器端跑 AI" />
+  <meta property="og:type" content="article" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%233d63dd'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='bold' fill='white'>J</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .article-banner { height: 6px; background: linear-gradient(90deg, #8b5cf6, #5b21b6); }
+    .article-wrap { max-width: 720px; margin: 0 auto; padding: 0 clamp(16px,4vw,24px); }
+    .article-breadcrumb { font-size: 0.8rem; color: var(--muted-lt); padding: 20px 0 0; display: flex; align-items: center; gap: 6px; }
+    .article-breadcrumb a { color: var(--accent); text-decoration: none; }
+    .article-breadcrumb a:hover { text-decoration: underline; }
+    .article-header { padding: 32px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .article-cat { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6d28d9; background: #ede9fe; padding: 3px 9px; border-radius: 4px; margin-bottom: 14px; }
+    .article-header h1 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; line-height: 1.3; color: var(--text-head); letter-spacing: -0.02em; margin-bottom: 14px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; font-size: 0.8rem; color: var(--muted-lt); flex-wrap: wrap; }
+    .article-meta .author-ava { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #3d63dd); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .article-body { font-size: clamp(0.95rem, 2.2vw, 1.05rem); line-height: 1.85; color: #2d2d2d; padding-bottom: 60px; }
+    .article-body h2 { font-family: 'Lora', Georgia, serif; font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 700; color: var(--text-head); margin: 48px 0 16px; letter-spacing: -0.02em; }
+    .article-body h3 { font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; color: var(--text-head); margin: 32px 0 12px; }
+    .article-body p { margin-bottom: 22px; }
+    .article-body a { color: var(--accent); text-decoration: underline; text-decoration-color: #c7d7f9; text-underline-offset: 3px; }
+    .article-body ul, .article-body ol { margin: 0 0 22px 0; padding-left: 24px; }
+    .article-body li { margin-bottom: 8px; }
+    .article-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: #f1f5f9; color: #6d28d9; padding: 2px 6px; border-radius: 4px; }
+    .article-body pre { background: #0f172a; color: #e2e8f0; padding: 20px 24px; border-radius: 10px; overflow-x: auto; margin: 24px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.875em; line-height: 1.7; }
+    .article-body pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .article-body blockquote { border-left: 3px solid #8b5cf6; margin: 28px 0; padding: 4px 0 4px 20px; color: var(--muted); font-style: italic; }
+    .article-body .note { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body .warn { background: #fff8f0; border: 1px solid #ffd7aa; border-radius: 8px; padding: 16px 18px; margin: 24px 0; font-size: 0.92rem; }
+    .article-body hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+    .related-posts { background: var(--bg-sub); border-radius: 12px; padding: 28px; margin-top: 48px; }
+    .related-posts h3 { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-lt); margin-bottom: 16px; }
+    .related-link { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; color: inherit; padding: 10px 0; border-bottom: 1px solid var(--border); transition: all 0.12s; }
+    .related-link:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-link:hover span { color: var(--accent); }
+    .related-link .rcat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--muted-lt); letter-spacing: 0.06em; flex-shrink: 0; padding-top: 3px; min-width: 70px; }
+    .related-link span { font-size: 0.92rem; font-weight: 600; color: var(--text-head); line-height: 1.4; transition: color 0.12s; }
+    @media (max-width: 640px) {
+      .article-body pre { padding: 14px 16px; font-size: 0.8em; }
+      .article-body h2 { margin-top: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="nav-brand"><span class="dot"></span>JosieCode73</a>
+    <ul class="nav-links">
+      <li class="nav-secondary"><a href="../index.html">Home</a></li>
+      <li><a href="index.html" class="active">Blog</a></li>
+      <li><a href="../portfolio/index.html" class="nav-cta">Portfolio</a></li>
+      <li><a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub ↗</a></li>
+    </ul>
+  </nav>
+  <div class="article-banner"></div>
+
+  <main style="padding-top:calc(var(--nav-h) + 6px);">
+    <div class="article-wrap">
+      <div class="article-breadcrumb">
+        <a href="index.html">Blog</a> <span>›</span> <span>AI / RAG</span>
+      </div>
+
+      <header class="article-header">
+        <span class="article-cat">AI / RAG</span>
+        <h1>自建 RAG 系統：從 Embedding 到答案生成的全流程，以及那些沒人告訴你的細節</h1>
+        <div class="article-meta">
+          <div class="author-ava">J</div>
+          <span><strong>JosieCode73</strong></span>
+          <span>·</span>
+          <span>2026 年 3 月</span>
+          <span>·</span>
+          <span>12 min read</span>
+        </div>
+      </header>
+
+      <article class="article-body">
+
+        <p>建 AI Assistant 這個專案的時候，我給自己設了一個限制：<strong>不能有雲端 API 費用</strong>。不是吝嗇，是想弄清楚「純前端的 AI 應用到底能走多遠」。最後做出來的結果讓我有點意外——在瀏覽器端跑推理這件事，比我想的更可行。</p>
+
+        <p>這篇把整個 RAG 管線的設計決策都寫出來，包括幾個讓我花了不少時間才搞清楚的地方。</p>
+
+        <h2>RAG 是什麼，以及為什麼不是 Fine-tuning</h2>
+
+        <p>RAG（Retrieval-Augmented Generation）的核心思路很簡單：與其讓模型「記住」所有知識，不如在回答問題的時候，先去找相關資料，再把資料連同問題一起交給模型。</p>
+
+        <p>Fine-tuning 適合讓模型改變「說話方式」或學習領域特定的格式，但對於「更新知識」這件事效率很差——每次知識庫更新就要重新訓練，成本高而且慢。RAG 則是讓知識庫的更新與模型分離，隨時可以換、隨時可以加。</p>
+
+        <p>對我的 use case（讓用戶上傳文件並對其提問）來說，RAG 是唯一合理的選擇。</p>
+
+        <h2>在瀏覽器裡跑 Transformer：ONNX Runtime Web</h2>
+
+        <p>這是整個專案最核心的技術選擇。ONNX Runtime Web 讓你可以在瀏覽器裡執行 ONNX 格式的模型，後端加速選項有 WebAssembly 和 WebGPU（目前支援度還不全）。</p>
+
+        <p>Embedding 模型我選的是 <code>all-MiniLM-L6-v2</code> 的 ONNX 版本——輸出維度 384，模型大小約 23MB，在效果和體積之間取得了還算合理的平衡。更大的 <code>all-mpnet-base-v2</code>（768 維）效果更好，但 420MB 在瀏覽器裡有點不實際。</p>
+
+        <pre><code>import { InferenceSession, Tensor } from 'onnxruntime-web'
+
+// 初始化 session（只做一次，放在 Web Worker 裡）
+const session = await InferenceSession.create('/models/all-MiniLM-L6-v2.onnx', {
+  executionProviders: ['wasm'],
+})
+
+async function getEmbedding(text: string): Promise<number[]> {
+  const tokens = tokenize(text)   // 自行實作或用 transformers.js
+  const inputIds = new Tensor('int64', tokens.ids, [1, tokens.ids.length])
+  const attentionMask = new Tensor('int64', tokens.mask, [1, tokens.mask.length])
+
+  const output = await session.run({ input_ids: inputIds, attention_mask: attentionMask })
+  const embeddings = output['last_hidden_state'].data as Float32Array
+
+  // Mean pooling + L2 normalize
+  return meanPoolAndNormalize(embeddings, tokens.ids.length)
+}</code></pre>
+
+        <div class="note">💡 <strong>放在 Web Worker 裡很重要</strong>。ONNX 推理會阻塞主執行緒，如果在主執行緒跑，UI 會凍結幾秒。用 Web Worker 隔開，體驗差很多。</div>
+
+        <h2>Chunking 策略：沒有一個尺寸適合所有人</h2>
+
+        <p>文件切塊（chunking）是 RAG 裡最容易被低估的步驟。塊太大，向量語意模糊，搜索準確度差；塊太小，上下文不夠，回答品質差。</p>
+
+        <p>我試過幾種策略：</p>
+
+        <ul>
+          <li><strong>固定 token 數</strong>（512 tokens，64 overlap）：最簡單，通用性最好，是我最後採用的方案</li>
+          <li><strong>按段落切</strong>：對結構良好的文件效果好，但 PDF 解析出來的文字常常段落判斷很混亂</li>
+          <li><strong>語意切塊（Semantic chunking）</strong>：用相鄰句子的 embedding 相似度決定切點，效果最好但計算成本高</li>
+        </ul>
+
+        <p>最終我用的是固定 token 數 + overlap，理由很實際：計算成本低，而且對我的 use case（用戶上傳的是各種格式的文件）最穩定。</p>
+
+        <h3>Tokenization 的細節</h3>
+        <p>不同模型用不同的 tokenizer，計算 token 數的結果會不一樣。<code>all-MiniLM-L6-v2</code> 用的是 WordPiece tokenizer，英文一個詞大約 1-2 個 token，中文則是每個字一個 token。如果你的文件以中文為主，同樣的 chunk size 在字符數上會更長。</p>
+
+        <h2>向量搜索：不需要向量資料庫</h2>
+
+        <p>因為是純前端，沒有後端服務，我沒有辦法用 Pinecone 或 Weaviate 這類向量資料庫。替代方案是把 embeddings 存在 IndexedDB 裡，搜索時全部載入記憶體做 cosine similarity 計算。</p>
+
+        <p>這個方案的上限大約是幾千個 chunk（幾百頁文件），超過這個規模性能會開始下降。對於大部分的文件 Q&A 場景，這個上限夠用。</p>
+
+        <pre><code>function cosineSimilarity(a: number[], b: number[]): number {
+  let dot = 0, normA = 0, normB = 0
+  for (let i = 0; i < a.length; i++) {
+    dot   += a[i] * b[i]
+    normA += a[i] * a[i]
+    normB += b[i] * b[i]
+  }
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB))
+}
+
+function searchSimilar(query: number[], chunks: Chunk[], topK = 5): Chunk[] {
+  return chunks
+    .map(chunk => ({ chunk, score: cosineSimilarity(query, chunk.embedding) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, topK)
+    .map(r => r.chunk)
+}</code></pre>
+
+        <h2>Context Window 管理：最容易忽略的環節</h2>
+
+        <p>找到了相關的 chunk，下一步是把它們拼成 Context 交給語言模型。這裡有一個常見的錯誤：<strong>直接把 top-K 的結果全部丟進去</strong>。</p>
+
+        <p>問題是 Context Window 有長度限制。如果你的模型（我用的是一個本地跑的小型 LLM）Context Window 是 4096 tokens，而你的 top-5 chunk 加起來就 3000 tokens，留給問題和回答的空間就很緊。</p>
+
+        <p>我的做法是動態計算：</p>
+
+        <ol>
+          <li>先估算問題本身的 token 數</li>
+          <li>預留給回答的空間（例如 512 tokens）</li>
+          <li>剩餘的空間拿來填 chunk，按相似度分數從高到低填入，超過就停</li>
+        </ol>
+
+        <p>這樣可以在不超出 Context Window 的前提下，盡量放入最相關的資訊。</p>
+
+        <h2>關於幻覺（Hallucination）</h2>
+
+        <p>RAG 能大幅減少幻覺，但不能完全消除。當用戶問的問題在文件裡找不到相關資訊時，模型還是有可能自行「補充」。</p>
+
+        <p>我加了一個簡單的 confidence check：如果 top-1 chunk 的相似度分數低於某個閾值（我設的是 0.65），就直接回傳「找不到相關資訊」，不把任何 context 交給模型。</p>
+
+        <blockquote>最讓我意外的發現是：chunk 的切法和 Context 的組裝方式，對最終回答品質的影響，比換更大的模型更顯著。在瀏覽器端資源有限的情況下，這兩件事的投資報酬率最高。</blockquote>
+
+        <div class="related-posts">
+          <h3>Related Articles</h3>
+          <a href="vite-tailwind-v4.html" class="related-link">
+            <span class="rcat">Frontend</span>
+            <span>Vite + Tailwind CSS v4 完整設定指南</span>
+          </a>
+          <a href="crdt-indexeddb.html" class="related-link">
+            <span class="rcat">Architecture</span>
+            <span>CRDT + IndexedDB：打造真正離線優先的筆記應用</span>
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 JosieCode73 &nbsp;·&nbsp;
+      <a href="index.html">Blog</a> &nbsp;·&nbsp;
+      <a href="../portfolio/index.html">Portfolio</a> &nbsp;·&nbsp;
+      <a href="https://github.com/josiecode73" target="_blank" rel="noopener">GitHub</a>
+    </p>
+  </footer>
+</body>
+</html>
