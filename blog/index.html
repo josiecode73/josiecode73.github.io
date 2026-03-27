@@ -67,7 +67,7 @@
     }
     .sb-app:last-child { border-bottom: none; padding-bottom: 0; }
     .sb-app:hover .sb-name { color: var(--accent); }
-    .sb-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+    .sb-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; color: rgba(255,255,255,0.9); }
     .sb-name { font-size: 0.84rem; font-weight: 600; color: var(--text); transition: color 0.12s; }
     .sb-type { font-size: 0.71rem; color: var(--muted-lt); }
     .sb-arrow { color: var(--muted-lt); margin-left: auto; font-size: 0.75rem; }
@@ -93,7 +93,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.9);
       flex-shrink: 0;
       overflow: hidden;
     }
@@ -218,9 +222,9 @@
       </div>
 
       <!-- FEATURED POST -->
-      <a href="#vite-tailwind" class="featured-card">
-        <div class="featured-card-img thumb-frontend">
-          <span class="img-label">⚡</span>
+      <a href="vite-tailwind-v4.html" class="featured-card">
+        <div class="featured-card-img thumb-frontend" style="font-family:'JetBrains Mono','Fira Code',monospace;font-size:clamp(0.9rem,2vw,1.1rem);font-weight:700;letter-spacing:0.04em;color:rgba(255,255,255,0.85);">
+          vite + tailwind v4
         </div>
         <div class="featured-card-body">
           <div>
@@ -251,7 +255,7 @@
           <div class="post-list">
 
             <a href="vite-tailwind-v4.html" class="pli">
-              <div class="pli-thumb thumb-frontend">⚡</div>
+              <div class="pli-thumb thumb-frontend">FE</div>
               <div class="pli-body">
                 <span class="pli-cat" style="color:#1d4ed8">Frontend</span>
                 <div class="pli-title">Vite + Tailwind v4：我踩過的坑與你需要的那份設定</div>
@@ -264,7 +268,7 @@
             </a>
 
             <a href="rag-architecture.html" class="pli">
-              <div class="pli-thumb thumb-ai">🤖</div>
+              <div class="pli-thumb thumb-ai">AI</div>
               <div class="pli-body">
                 <span class="pli-cat" style="color:#6d28d9">AI / RAG</span>
                 <div class="pli-title">自建 RAG 系統：從 Embedding 到答案生成的全流程，以及那些沒人告訴你的細節</div>
@@ -277,7 +281,7 @@
             </a>
 
             <a href="threejs-product.html" class="pli">
-              <div class="pli-thumb thumb-3d">🌐</div>
+              <div class="pli-thumb thumb-3d">3D</div>
               <div class="pli-body">
                 <span class="pli-cat" style="color:#065f46">3D / WebGL</span>
                 <div class="pli-title">Three.js 產品 360° 展示：從「看起來不錯」到「在 iPhone 跑得動」</div>
@@ -290,7 +294,7 @@
             </a>
 
             <a href="crdt-indexeddb.html" class="pli">
-              <div class="pli-thumb thumb-arch">📦</div>
+              <div class="pli-thumb thumb-arch">Arc</div>
               <div class="pli-body">
                 <span class="pli-cat" style="color:#92400e">Architecture</span>
                 <div class="pli-title">CRDT + IndexedDB：為什麼 NoteVault 不用 localStorage，以及這個決定的代價</div>
@@ -303,7 +307,7 @@
             </a>
 
             <a href="glassmorphism-2026.html" class="pli">
-              <div class="pli-thumb thumb-design">✨</div>
+              <div class="pli-thumb thumb-design">UI</div>
               <div class="pli-body">
                 <span class="pli-cat" style="color:#9d174d">UI / UX</span>
                 <div class="pli-title">Glassmorphism 2026：10 個 App 以後，我總算弄清楚什麼時候不該用它</div>
@@ -316,7 +320,7 @@
             </a>
 
             <a href="render-deploy.html" class="pli">
-              <div class="pli-thumb thumb-devops">🚀</div>
+              <div class="pli-thumb thumb-devops">Ops</div>
               <div class="pli-body">
                 <span class="pli-cat" style="color:#0e7490">DevOps</span>
                 <div class="pli-title">Render 部署 10 個 React App：monorepo 的正確設定方式，以及 cold start 的對策</div>
@@ -332,7 +336,7 @@
 
           <!-- AUTHOR STRIP -->
           <div class="author-strip">
-            <div class="author-ava">👩‍💻</div>
+            <div class="author-ava">J</div>
             <div>
               <h4>JosieCode73</h4>
               <p>Full-stack developer · Building in public · 10 live apps</p>
@@ -363,28 +367,28 @@
           <div class="cta-box">
             <h3>Stay in the loop</h3>
             <p>Follow on GitHub to be notified when new articles are published.</p>
-            <a href="https://github.com/josiecode73" target="_blank" rel="noopener">⭐ Follow JosieCode73</a>
+            <a href="https://github.com/josiecode73" target="_blank" rel="noopener">Follow JosieCode73 ↗</a>
           </div>
 
           <div class="sb-block" style="margin-top:16px">
             <div class="sb-title">Live Projects</div>
             <a href="https://josie-saascontrol.web.app" target="_blank" rel="noopener" class="sb-app">
-              <div class="sb-icon" style="background:linear-gradient(135deg,#3b82f6,#1e40af)">📊</div>
+              <div class="sb-icon" style="background:linear-gradient(135deg,#3b82f6,#1e40af);font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;letter-spacing:.02em">SaaS</div>
               <div><div class="sb-name">SaaSControl</div><div class="sb-type">Dashboard</div></div>
               <span class="sb-arrow">↗</span>
             </a>
             <a href="https://josie-aiassistant.web.app" target="_blank" rel="noopener" class="sb-app">
-              <div class="sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#5b21b6)">🤖</div>
+              <div class="sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#5b21b6);font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:700;letter-spacing:.02em">AI</div>
               <div><div class="sb-name">AI Assistant</div><div class="sb-type">RAG Platform</div></div>
               <span class="sb-arrow">↗</span>
             </a>
             <a href="https://josie-cryptolens.web.app" target="_blank" rel="noopener" class="sb-app">
-              <div class="sb-icon" style="background:linear-gradient(135deg,#6d28d9,#2e1065)">📈</div>
+              <div class="sb-icon" style="background:linear-gradient(135deg,#6d28d9,#2e1065);font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;letter-spacing:.02em">C₿</div>
               <div><div class="sb-name">CryptoLens</div><div class="sb-type">Crypto Dashboard</div></div>
               <span class="sb-arrow">↗</span>
             </a>
             <a href="https://josie-productorbit.web.app" target="_blank" rel="noopener" class="sb-app">
-              <div class="sb-icon" style="background:linear-gradient(135deg,#64748b,#1e293b)">🌐</div>
+              <div class="sb-icon" style="background:linear-gradient(135deg,#64748b,#1e293b);font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;letter-spacing:.02em">3D</div>
               <div><div class="sb-name">ProductOrbit</div><div class="sb-type">3D Showcase</div></div>
               <span class="sb-arrow">↗</span>
             </a>
